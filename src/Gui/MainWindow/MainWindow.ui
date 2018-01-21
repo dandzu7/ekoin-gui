@@ -1075,7 +1075,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>About Karbovanets</string>
+    <string>About Karbo Wallet</string>
    </property>
   </action>
   <action name="m_aboutQtAction">
@@ -1795,22 +1795,6 @@
    </hints>
   </connection>
   <connection>
-   <sender>m_createPaymentRequestAction</sender>
-   <signal>triggered()</signal>
-   <receiver>m_receiveFrame</receiver>
-   <slot>setVisible(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>1033</x>
-     <y>459</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>m_receiveButton</sender>
    <signal>toggled(bool)</signal>
    <receiver>m_receiveFrame</receiver>
@@ -1823,6 +1807,22 @@
     <hint type="destinationlabel">
      <x>1168</x>
      <y>453</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>m_createPaymentRequestAction</sender>
+   <signal>triggered()</signal>
+   <receiver>m_receiveButton</receiver>
+   <slot>toggle()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>80</x>
+     <y>195</y>
     </hint>
    </hints>
   </connection>

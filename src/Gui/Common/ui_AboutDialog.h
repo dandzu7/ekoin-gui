@@ -36,14 +36,14 @@ public:
     {
         if (AboutDialog->objectName().isEmpty())
             AboutDialog->setObjectName(QStringLiteral("AboutDialog"));
-        AboutDialog->resize(600, 390);
-        QSizePolicy sizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+        AboutDialog->resize(600, 500);
+        QSizePolicy sizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
         sizePolicy.setHorizontalStretch(0);
         sizePolicy.setVerticalStretch(0);
         sizePolicy.setHeightForWidth(AboutDialog->sizePolicy().hasHeightForWidth());
         AboutDialog->setSizePolicy(sizePolicy);
-        AboutDialog->setMinimumSize(QSize(600, 390));
-        AboutDialog->setMaximumSize(QSize(600, 390));
+        AboutDialog->setMinimumSize(QSize(600, 500));
+        AboutDialog->setMaximumSize(QSize(600, 500));
         verticalLayout = new QVBoxLayout(AboutDialog);
         verticalLayout->setObjectName(QStringLiteral("verticalLayout"));
         m_aboutLabel = new QLabel(AboutDialog);

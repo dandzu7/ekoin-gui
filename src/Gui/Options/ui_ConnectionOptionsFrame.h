@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'ConnectionOptionsFrame.ui'
 **
-** Created by: Qt User Interface Compiler version 5.5.1
+** Created by: Qt User Interface Compiler version 5.10.1
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
@@ -279,18 +279,18 @@ public:
 
     void retranslateUi(QFrame *ConnectionOptionsFrame)
     {
-        ConnectionOptionsFrame->setWindowTitle(QApplication::translate("ConnectionOptionsFrame", "Frame", 0));
-        m_autoRadio->setText(QApplication::translate("ConnectionOptionsFrame", "Auto selection", 0));
-        m_autoHelperLabel->setText(QApplication::translate("ConnectionOptionsFrame", "Wallet will connect to local Karbovanets daemon process on port 8081. In case of no local daemon running it will use an in-wallet embedded node implementation.", 0));
-        m_embeddedRadio->setText(QApplication::translate("ConnectionOptionsFrame", "Embedded", 0));
-        m_embeddedHelperLabel->setText(QApplication::translate("ConnectionOptionsFrame", "An in-wallet embedded Karbovanets node will be used.", 0));
-        m_localRadio->setText(QApplication::translate("ConnectionOptionsFrame", "Local daemon", 0));
-        label->setText(QApplication::translate("ConnectionOptionsFrame", "Port:", 0));
-        m_localHelperLabel->setText(QApplication::translate("ConnectionOptionsFrame", "Wallet will connect to local Karbovanets daemon process. Please specify daemon's port.", 0));
-        m_remoteRadio->setText(QApplication::translate("ConnectionOptionsFrame", "Remote daemon", 0));
-        label_2->setText(QApplication::translate("ConnectionOptionsFrame", "Host:", 0));
-        label_3->setText(QApplication::translate("ConnectionOptionsFrame", "Port:", 0));
-        m_remoteHelperLabel->setText(QApplication::translate("ConnectionOptionsFrame", "Wallet will connect to Karbovanets node running on another PC in the local or global network. Please specify IP address or domain name and the port.", 0));
+        ConnectionOptionsFrame->setWindowTitle(QApplication::translate("ConnectionOptionsFrame", "Frame", nullptr));
+        m_autoRadio->setText(QApplication::translate("ConnectionOptionsFrame", "Auto selection", nullptr));
+        m_autoHelperLabel->setText(QApplication::translate("ConnectionOptionsFrame", "Wallet will connect to local Karbo daemon process on port 32348. In case of no local daemon running it will use an in-wallet embedded node implementation.", nullptr));
+        m_embeddedRadio->setText(QApplication::translate("ConnectionOptionsFrame", "Embedded", nullptr));
+        m_embeddedHelperLabel->setText(QApplication::translate("ConnectionOptionsFrame", "An in-wallet embedded Karbo node will be used.", nullptr));
+        m_localRadio->setText(QApplication::translate("ConnectionOptionsFrame", "Local daemon", nullptr));
+        label->setText(QApplication::translate("ConnectionOptionsFrame", "Port:", nullptr));
+        m_localHelperLabel->setText(QApplication::translate("ConnectionOptionsFrame", "Wallet will connect to local Karbo daemon process. Please specify daemon's port.", nullptr));
+        m_remoteRadio->setText(QApplication::translate("ConnectionOptionsFrame", "Remote daemon", nullptr));
+        label_2->setText(QApplication::translate("ConnectionOptionsFrame", "Host:", nullptr));
+        label_3->setText(QApplication::translate("ConnectionOptionsFrame", "Port:", nullptr));
+        m_remoteHelperLabel->setText(QApplication::translate("ConnectionOptionsFrame", "Wallet will connect to Karbo node running on another PC in the local or global network. Please specify IP address or domain name and the port. If masternode is specified additional fee 0.25% but no more than 1 KRB is applied when sending transaction.", nullptr));
     } // retranslateUi
 
 };
