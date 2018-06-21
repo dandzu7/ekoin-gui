@@ -800,7 +800,13 @@
          </item>
          <item>
           <widget class="QPushButton" name="m_blockExplorerButton">
-           <property name="focusPolicy">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+		   <property name="focusPolicy">
             <enum>Qt::NoFocus</enum>
            </property>
            <property name="text">
@@ -814,23 +820,7 @@
            </attribute>
           </widget>
          </item>
-         <item>
-          <widget class="QPushButton" name="m_miningButton">
-           <property name="focusPolicy">
-            <enum>Qt::NoFocus</enum>
-           </property>
-           <property name="text">
-            <string>MINING</string>
-           </property>
-           <property name="checkable">
-            <bool>true</bool>
-           </property>
-           <attribute name="buttonGroup">
-            <string notr="true">m_toolButtonGroup</string>
-           </attribute>
-          </widget>
-         </item>
-         <item>
+		 <item>
           <spacer name="verticalSpacer">
            <property name="orientation">
             <enum>Qt::Vertical</enum>
@@ -916,16 +906,6 @@
         </property>
        </widget>
       </item>
-      <item>
-       <widget class="WalletGui::MiningFrame" name="m_miningFrame">
-        <property name="frameShape">
-         <enum>QFrame::NoFrame</enum>
-        </property>
-        <property name="frameShadow">
-         <enum>QFrame::Raised</enum>
-        </property>
-       </widget>
-      </item>
      </layout>
     </item>
     <item>
@@ -949,7 +929,7 @@
      <x>0</x>
      <y>0</y>
      <width>1273</width>
-     <height>21</height>
+     <height>20</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -1267,12 +1247,6 @@
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>WalletGui::MiningFrame</class>
-   <extends>QFrame</extends>
-   <header>Gui/Mining/MiningFrame.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
    <class>WalletGui::WalletStatusBar</class>
    <extends>QStatusBar</extends>
    <header>Gui/MainWindow/WalletStatusBar.h</header>
@@ -1566,22 +1540,6 @@
     </hint>
     <hint type="destinationlabel">
      <x>1168</x>
-     <y>453</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>m_miningButton</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>m_miningFrame</receiver>
-   <slot>setVisible(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>82</x>
-     <y>274</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>1180</x>
      <y>453</y>
     </hint>
    </hints>

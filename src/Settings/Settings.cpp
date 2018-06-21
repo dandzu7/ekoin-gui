@@ -83,7 +83,6 @@ Settings& Settings::instance() {
 
 
 Settings::Settings() : m_p2pBindPort(0), m_cmdLineParser(nullptr) {
-  m_defaultPoolList << "pool.karbowanec.com:3333" << "pool2.democats.org:45570" << "krb.sberex.com:3333" << "mine.krb.mypool.online:32350";
   m_defaultNodeList << "node.karbowanec.com:32348" << "node.karbovanets.org:32348" << "node.karbo.cloud:32348" << "node.karbo.io:32348";
 
   Style* lightStyle = new LightStyle();
@@ -115,24 +114,8 @@ void Settings::init() {
     cfgFile.close();
   }
 
-  restoreDefaultPoolList();
   restoreDefaultNodeList();
   setDefaultRemoteNode();
-}
-
-void Settings::restoreDefaultPoolList() {
-  if (!m_settings.contains(OPTION_MINING_POOLS)) {
-    setMiningPoolList(QStringList() << m_defaultPoolList);
-  } else {
-    QStringList poolList = getMiningPoolList();
-    for (const QString& pool : m_defaultPoolList) {
-      if (!poolList.contains(pool)) {
-        poolList << pool;
-      }
-    }
-
-    setMiningPoolList(poolList);
-  }
 }
 
 void Settings::restoreDefaultNodeList() {

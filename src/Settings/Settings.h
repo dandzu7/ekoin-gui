@@ -91,7 +91,6 @@ public:
   bool isCloseToTrayEnabled() const;
 
   void init();
-  void restoreDefaultPoolList();
   void restoreDefaultNodeList();
   void setDefaultRemoteNode();
   void setCommandLineParser(CommandLineParser* _cmdLineParser);
@@ -133,8 +132,7 @@ public:
 #endif
 
 private:
-  QJsonObject m_settings;
-  QStringList m_defaultPoolList;
+  QJsonObject m_settings;  
   QStringList m_defaultNodeList;
   quint16 m_p2pBindPort;
   CommandLineParser* m_cmdLineParser;

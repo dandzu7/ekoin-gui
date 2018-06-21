@@ -287,10 +287,6 @@ QCalendarWidget QMenu {
   background-image: url(:icons/%currentTheme%/address_book);
 }
 
-#MainWindow > #centralwidget > #m_toolFrame > #m_miningButton {
-  background-image: url(:icons/%currentTheme%/miner);
-}
-
 #MainWindow > #centralwidget > #m_toolFrame > #m_sendButton {
   background-image: url(:icons/%currentTheme%/send);
 }
@@ -313,11 +309,6 @@ QCalendarWidget QMenu {
 #MainWindow > #centralwidget > #m_toolFrame > #m_addressBookButton:checked {
   color: #ffffff;
   background-image: url(:icons/dark/address_book);
-}
-
-#MainWindow > #centralwidget > #m_toolFrame > #m_miningButton:checked {
-  color: #ffffff;
-  background-image: url(:icons/dark/miner);
 }
 
 #MainWindow > #centralwidget > #m_toolFrame > #m_sendButton:checked {
@@ -373,12 +364,6 @@ QCalendarWidget QMenu {
   background-image: url(:icons/address_book_disabled);
 }
 
-#MainWindow > #centralwidget > #m_toolFrame > #m_miningButton:checked:disabled {
-  background-color: transparent;
-  color: %toolButtonFontColorDisabled%;
-  background-image: url(:icons/miner_disabled);
-}
-
 #MainWindow > #centralwidget > #m_toolFrame > #m_sendButton:checked:disabled {
   background-color: transparent;
   color: %toolButtonFontColorDisabled%;
@@ -401,6 +386,13 @@ QCalendarWidget QMenu {
 #MainWindow > #centralwidget > #m_headerFrame > #m_balanceFrame > #m_balanceCopyLabel {
   font-size: %fontSizeTiny%;
   color: %fontColorBlueHover%;
+}
+
+#m_overviewBalanceFrame,
+#m_overviewNodeFrame
+{
+  background-color: #EFF3FA;
+  border: none;
 }
 
 #m_receiveFrame {
