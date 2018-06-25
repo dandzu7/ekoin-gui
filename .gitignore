@@ -2,3 +2,4 @@ build/
 rocksdb/
 *~
 *.user
+.DS_Store
