@@ -1261,6 +1261,12 @@
    <container>1</container>
   </customwidget>
   <customwidget>
+   <class>WalletGui::BlockExplorerFrame</class>
+   <extends>QFrame</extends>
+   <header>Gui/BlockchainExplorer/BlockExplorerFrame.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
    <class>WalletGui::MiningFrame</class>
    <extends>QFrame</extends>
    <header>Gui/Mining/MiningFrame.h</header>

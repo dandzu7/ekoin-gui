@@ -26,8 +26,8 @@
 #include <QtWidgets/QSpacerItem>
 #include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QWidget>
-#include <blockexplorerframe.h>
 #include "Gui/AddressBook/AddressBookFrame.h"
+#include "Gui/BlockchainExplorer/BlockExplorerFrame.h"
 #include "Gui/Common/CopyMagicLabel.h"
 #include "Gui/Common/WalletLinkLikeButton.h"
 #include "Gui/Common/WalletTextLabel.h"
