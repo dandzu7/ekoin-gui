@@ -412,6 +412,7 @@ void MainWindow::setOpenedState() {
   m_ui->m_overviewFrame->show();
 
   m_ui->m_overviewButton->setChecked(true);
+  m_ui->m_blockExplorerButton->setEnabled(m_cryptoNoteAdapter->getNodeAdapter()->getBlockChainExplorerAdapter() != nullptr);
   m_ui->m_receiveButton->setEnabled(true);
 }
 
@@ -437,6 +438,7 @@ void MainWindow::setClosedState() {
   m_ui->m_sendFrame->hide();
   m_ui->m_transactionsFrame->hide();
   m_ui->m_addressBookFrame->hide();
+  m_ui->m_blockExplorerFrame->hide();
   m_ui->m_receiveFrame->hide();
   m_ui->m_miningFrame->hide();
   m_ui->m_noWalletFrame->show();
@@ -540,7 +542,7 @@ void MainWindow::themeChanged() {
   m_syncMovie->start();
   QList<IWalletUiItem*> uiItems;
   uiItems << m_ui->m_noWalletFrame << m_ui->m_overviewFrame << m_ui->m_sendFrame << m_ui->m_transactionsFrame <<
-    m_ui->m_receiveFrame << m_ui->m_addressBookFrame << m_ui->m_miningFrame << m_ui->statusBar;
+    m_ui->m_blockExplorerFrame <<  m_ui->m_receiveFrame << m_ui->m_addressBookFrame << m_ui->m_miningFrame << m_ui->statusBar;
   for (auto& uiItem : uiItems) {
     uiItem->updateStyle();
   }

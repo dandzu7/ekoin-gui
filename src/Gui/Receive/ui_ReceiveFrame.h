@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'ReceiveFrame.ui'
 **
-** Created by: Qt User Interface Compiler version 5.6.0
+** Created by: Qt User Interface Compiler version 5.10.1
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
@@ -112,7 +112,7 @@ public:
         m_amountRequestSpinBox = new QDoubleSpinBox(m_createRequestFrame);
         m_amountRequestSpinBox->setObjectName(QStringLiteral("m_amountRequestSpinBox"));
         m_amountRequestSpinBox->setDecimals(12);
-        m_amountRequestSpinBox->setMaximum(1e+09);
+        m_amountRequestSpinBox->setMaximum(1e+9);
 
         horizontalLayout_6->addWidget(m_amountRequestSpinBox);
 
@@ -293,17 +293,17 @@ public:
 
     void retranslateUi(QFrame *ReceiveFrame)
     {
-        ReceiveFrame->setWindowTitle(QApplication::translate("ReceiveFrame", "Frame", 0));
-        label->setText(QApplication::translate("ReceiveFrame", "Create request", 0));
-        amountLabel->setText(QApplication::translate("ReceiveFrame", "AMOUNT", 0));
-        paymentIdLabel->setText(QApplication::translate("ReceiveFrame", "PAYMENT ID", 0));
-        m_generateIdButton->setText(QApplication::translate("ReceiveFrame", "Generate", 0));
-        labelLabel->setText(QApplication::translate("ReceiveFrame", "LABEL", 0));
-        label_2->setText(QApplication::translate("ReceiveFrame", "Payment request", 0));
+        ReceiveFrame->setWindowTitle(QApplication::translate("ReceiveFrame", "Frame", nullptr));
+        label->setText(QApplication::translate("ReceiveFrame", "Create request", nullptr));
+        amountLabel->setText(QApplication::translate("ReceiveFrame", "AMOUNT", nullptr));
+        paymentIdLabel->setText(QApplication::translate("ReceiveFrame", "PAYMENT ID", nullptr));
+        m_generateIdButton->setText(QApplication::translate("ReceiveFrame", "Generate", nullptr));
+        labelLabel->setText(QApplication::translate("ReceiveFrame", "LABEL", nullptr));
+        label_2->setText(QApplication::translate("ReceiveFrame", "Payment request", nullptr));
         m_qrCodeRequestLabel->setText(QString());
-        m_copyToClipBoardButton->setText(QApplication::translate("ReceiveFrame", "Copy to clipboard", 0));
-        m_saveRequestButton->setText(QApplication::translate("ReceiveFrame", "Save Request", 0));
-        m_saveQrCodeButton->setText(QApplication::translate("ReceiveFrame", "Save QR Code", 0));
+        m_copyToClipBoardButton->setText(QApplication::translate("ReceiveFrame", "Copy to clipboard", nullptr));
+        m_saveRequestButton->setText(QApplication::translate("ReceiveFrame", "Save Request", nullptr));
+        m_saveQrCodeButton->setText(QApplication::translate("ReceiveFrame", "Save QR Code", nullptr));
     } // retranslateUi
 
 };

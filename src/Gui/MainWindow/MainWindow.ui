@@ -907,7 +907,7 @@
        </widget>
       </item>
       <item>
-       <widget class="WalletGui::ReceiveFrame" name="m_blockExplorerFrame">
+       <widget class="WalletGui::BlockExplorerFrame" name="m_blockExplorerFrame">
         <property name="frameShape">
          <enum>QFrame::NoFrame</enum>
         </property>

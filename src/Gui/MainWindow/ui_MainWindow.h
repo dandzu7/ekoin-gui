@@ -26,6 +26,7 @@
 #include <QtWidgets/QSpacerItem>
 #include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QWidget>
+#include <blockexplorerframe.h>
 #include "Gui/AddressBook/AddressBookFrame.h"
 #include "Gui/Common/CopyMagicLabel.h"
 #include "Gui/Common/WalletLinkLikeButton.h"
@@ -124,7 +125,7 @@ public:
     WalletGui::AddressBookFrame *m_addressBookFrame;
     WalletGui::NoWalletFrame *m_noWalletFrame;
     WalletGui::ReceiveFrame *m_receiveFrame;
-    WalletGui::ReceiveFrame *m_blockExplorerFrame;
+    WalletGui::BlockExplorerFrame *m_blockExplorerFrame;
     WalletGui::MiningFrame *m_miningFrame;
     QProgressBar *m_syncProgress;
     QMenuBar *menubar;
@@ -576,7 +577,7 @@ public:
 
         horizontalLayout->addWidget(m_receiveFrame);
 
-        m_blockExplorerFrame = new WalletGui::ReceiveFrame(centralwidget);
+        m_blockExplorerFrame = new WalletGui::BlockExplorerFrame(centralwidget);
         m_blockExplorerFrame->setObjectName(QStringLiteral("m_blockExplorerFrame"));
         m_blockExplorerFrame->setFrameShape(QFrame::NoFrame);
         m_blockExplorerFrame->setFrameShadow(QFrame::Raised);

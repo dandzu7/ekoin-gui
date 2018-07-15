@@ -298,7 +298,7 @@ INodeAdapter::InitStatus InProcessNodeWorker::initCore() {
 
     m_core->set_cryptonote_protocol(reinterpret_cast<CryptoNote::i_cryptonote_protocol*>(&m_protocolHandler));
     //m_core->set_cryptonote_protocol(&m_protocolHandler->i_cryptonote_protocol);
-
+    m_core->set_cryptonote_protocol(&i_cryptonote_protocol::m_protocolHandler);
 
     CryptoNote::CoreConfig coreConfig = makeCoreConfig();
 
