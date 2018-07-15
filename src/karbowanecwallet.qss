@@ -278,7 +278,7 @@ QCalendarWidget QMenu {
 }
 
 #MainWindow > #centralwidget > #m_toolFrame > #m_blockExplorerButton {
-  background-image: url(:icons/%currentTheme%/block_explorer);
+  background-image: url(:icons/explorer);
 }
 
 #MainWindow > #centralwidget > #m_toolFrame > #m_receiveButton {

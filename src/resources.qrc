@@ -78,6 +78,7 @@
         <file alias="start-mining">icons/start.png</file>
         <file alias="stop-mining">icons/stop.png</file>
         <file alias="receive">icons/receive.png</file>
+        <file alias="explorer">icons/explorer.png</file>
         <file alias="address_book">icons/address_book.png</file>
         <file alias="transactions">icons/history.png</file>
         <file alias="overview">icons/overview.png</file>
