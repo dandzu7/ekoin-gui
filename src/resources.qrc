@@ -67,7 +67,6 @@
         <file alias="arrow-circle-hover">icons/arrow_circle_hover.png</file>
         <file alias="arrow-circle-up-hover">icons/arrow_circle_up_hover.png</file>
         <file alias="light/wallet-sync">icons/wallet_sync.gif</file>
-        <file alias="miner-big">icons/miner_big.png</file>
         <file alias="pool-stats">icons/pool_stats.png</file>
         <file alias="blog">icons/blog.png</file>
         <file alias="dark/wallet-sync">icons/wallet_sync_dark.gif</file>

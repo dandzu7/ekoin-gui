@@ -32,7 +32,6 @@
 #include "Gui/Common/WalletLinkLikeButton.h"
 #include "Gui/Common/WalletTextLabel.h"
 #include "Gui/MainWindow/WalletStatusBar.h"
-#include "Gui/Mining/MiningFrame.h"
 #include "Gui/NoWallet/NoWalletFrame.h"
 #include "Gui/Overview/OverviewFrame.h"
 #include "Gui/Receive/ReceiveFrame.h"
@@ -117,7 +116,6 @@ public:
     QPushButton *m_transactionsButton;
     QPushButton *m_addressBookButton;
     QPushButton *m_blockExplorerButton;
-    QPushButton *m_miningButton;
     QSpacerItem *verticalSpacer;
     WalletGui::OverviewFrame *m_overviewFrame;
     WalletGui::SendFrame *m_sendFrame;
@@ -126,7 +124,6 @@ public:
     WalletGui::NoWalletFrame *m_noWalletFrame;
     WalletGui::ReceiveFrame *m_receiveFrame;
     WalletGui::BlockExplorerFrame *m_blockExplorerFrame;
-    WalletGui::MiningFrame *m_miningFrame;
     QProgressBar *m_syncProgress;
     QMenuBar *menubar;
     QMenu *menuFile;
@@ -515,18 +512,12 @@ public:
         m_blockExplorerButton = new QPushButton(m_toolFrame);
         m_toolButtonGroup->addButton(m_blockExplorerButton);
         m_blockExplorerButton->setObjectName(QStringLiteral("m_blockExplorerButton"));
+        sizePolicy1.setHeightForWidth(m_blockExplorerButton->sizePolicy().hasHeightForWidth());
+        m_blockExplorerButton->setSizePolicy(sizePolicy1);
         m_blockExplorerButton->setFocusPolicy(Qt::NoFocus);
         m_blockExplorerButton->setCheckable(true);
 
         verticalLayout->addWidget(m_blockExplorerButton);
-
-        m_miningButton = new QPushButton(m_toolFrame);
-        m_toolButtonGroup->addButton(m_miningButton);
-        m_miningButton->setObjectName(QStringLiteral("m_miningButton"));
-        m_miningButton->setFocusPolicy(Qt::NoFocus);
-        m_miningButton->setCheckable(true);
-
-        verticalLayout->addWidget(m_miningButton);
 
         verticalSpacer = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
 
@@ -584,13 +575,6 @@ public:
 
         horizontalLayout->addWidget(m_blockExplorerFrame);
 
-        m_miningFrame = new WalletGui::MiningFrame(centralwidget);
-        m_miningFrame->setObjectName(QStringLiteral("m_miningFrame"));
-        m_miningFrame->setFrameShape(QFrame::NoFrame);
-        m_miningFrame->setFrameShadow(QFrame::Raised);
-
-        horizontalLayout->addWidget(m_miningFrame);
-
 
         verticalLayout_2->addLayout(horizontalLayout);
 
@@ -605,7 +589,7 @@ public:
         MainWindow->setCentralWidget(centralwidget);
         menubar = new QMenuBar(MainWindow);
         menubar->setObjectName(QStringLiteral("menubar"));
-        menubar->setGeometry(QRect(0, 0, 1273, 21));
+        menubar->setGeometry(QRect(0, 0, 1273, 20));
         menuFile = new QMenu(menubar);
         menuFile->setObjectName(QStringLiteral("menuFile"));
         menuSettings = new QMenu(menubar);
@@ -680,7 +664,6 @@ public:
         QObject::connect(m_encryptButton, SIGNAL(clicked()), m_encryptWalletAction, SLOT(trigger()));
         QObject::connect(m_preferencesAction, SIGNAL(triggered()), MainWindow, SLOT(showPreferences()));
         QObject::connect(m_blockExplorerButton, SIGNAL(toggled(bool)), m_blockExplorerFrame, SLOT(setVisible(bool)));
-        QObject::connect(m_miningButton, SIGNAL(toggled(bool)), m_miningFrame, SLOT(setVisible(bool)));
         QObject::connect(m_exportTrackingKeyAction, SIGNAL(triggered()), MainWindow, SLOT(exportTrackingKey()));
         QObject::connect(m_importKeyAction, SIGNAL(triggered()), MainWindow, SLOT(importKey()));
         QObject::connect(m_communityForumAction, SIGNAL(triggered()), MainWindow, SLOT(communityForumTriggered()));
@@ -769,7 +752,6 @@ public:
         m_transactionsButton->setText(QApplication::translate("MainWindow", "HISTORY", nullptr));
         m_addressBookButton->setText(QApplication::translate("MainWindow", "CONTACTS", nullptr));
         m_blockExplorerButton->setText(QApplication::translate("MainWindow", "EXPLORER", nullptr));
-        m_miningButton->setText(QApplication::translate("MainWindow", "MINING", nullptr));
         menuFile->setTitle(QApplication::translate("MainWindow", "File", nullptr));
         menuSettings->setTitle(QApplication::translate("MainWindow", "Settings", nullptr));
         menuThemes->setTitle(QApplication::translate("MainWindow", "Themes", nullptr));

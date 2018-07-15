@@ -38,11 +38,6 @@ namespace WalletGui {
 
 namespace {
 
-const char OPTION_MINING_POOLS[] = "miningPools";
-const char OPTION_MINING_CPU_CORE_COUNT[] = "miningCpuCoreCount";
-const char OPTION_MINING_ON_LOCKED_SCREEN[] = "miningOnLockedScreen";
-const char OPTION_MINING_PARAMS[] = "miningParams";
-const char OPTION_MINING_POOL_SWITCH_STRATEGY[] = "miningPoolSwitchStrategy";
 const char OPTION_REMOTE_NODES[] = "remoteRpcNodes";
 const char OPTION_NODE_CONNECTION_METHOD[] = "connectionMethod";
 const char OPTION_NODE_LOCAL_RPC_PORT[] = "localRpcPort";
@@ -83,7 +78,6 @@ Settings& Settings::instance() {
 
 
 Settings::Settings() : m_p2pBindPort(0), m_cmdLineParser(nullptr) {
-  m_defaultPoolList << "pool.karbowanec.com:3333" << "pool2.democats.org:45570" << "krb.sberex.com:3333" << "mine.krb.mypool.online:32350";
   m_defaultNodeList << "node.karbowanec.com:32348" << "node.karbovanets.org:32348" << "node.karbo.cloud:32348" << "node.karbo.io:32348";
 
   Style* lightStyle = new LightStyle();
@@ -115,24 +109,8 @@ void Settings::init() {
     cfgFile.close();
   }
 
-  restoreDefaultPoolList();
   restoreDefaultNodeList();
   setDefaultRemoteNode();
-}
-
-void Settings::restoreDefaultPoolList() {
-  if (!m_settings.contains(OPTION_MINING_POOLS)) {
-    setMiningPoolList(QStringList() << m_defaultPoolList);
-  } else {
-    QStringList poolList = getMiningPoolList();
-    for (const QString& pool : m_defaultPoolList) {
-      if (!poolList.contains(pool)) {
-        poolList << pool;
-      }
-    }
-
-    setMiningPoolList(poolList);
-  }
 }
 
 void Settings::restoreDefaultNodeList() {
@@ -156,16 +134,6 @@ void Settings::setDefaultRemoteNode() {
       QUrl _url = QUrl::fromUserInput(nodeList.at(rand() % nodeList.size()));
       m_settings.insert(OPTION_NODE_REMOTE_RPC_URL, QString("%1:%2").arg(_url.host()).arg(_url.port()));
    }
-}
-
-bool Settings::isMiningOnLockedScreenEnabled(bool _defaultValue) const {
-  QReadLocker lock(&m_lock);
-  if (!m_settings.contains(OPTION_MINING_PARAMS)) {
-    return _defaultValue;
-  }
-
-  QJsonObject miningParams = m_settings.value(OPTION_MINING_PARAMS).toObject();
-  return miningParams.contains(OPTION_MINING_ON_LOCKED_SCREEN) ? miningParams.value(OPTION_MINING_ON_LOCKED_SCREEN).toBool() : _defaultValue;
 }
 
 bool Settings::isSystemTrayAvailable() const {
@@ -416,28 +384,6 @@ QUrl Settings::getRemoteRpcUrl() const {
   return res;
 }
 
-QString Settings::getMiningPoolSwitchStrategy(const QString& _defaultValue) const {
-  QReadLocker lock(&m_lock);
-  if (!m_settings.contains(OPTION_MINING_PARAMS)) {
-    return _defaultValue;
-  }
-
-  QJsonObject miningParams = m_settings.value(OPTION_MINING_PARAMS).toObject();
-  return miningParams.contains(OPTION_MINING_POOL_SWITCH_STRATEGY) ?
-    miningParams.value(OPTION_MINING_POOL_SWITCH_STRATEGY).toString() : _defaultValue;
-}
-
-quint32 Settings::getMiningCpuCoreCount(quint32 _defaultValue) const {
-  QReadLocker lock(&m_lock);
-  if (!m_settings.contains(OPTION_MINING_PARAMS)) {
-    return _defaultValue;
-  }
-
-  QJsonObject miningParams = m_settings.value(OPTION_MINING_PARAMS).toObject();
-  return miningParams.contains(OPTION_MINING_CPU_CORE_COUNT) ?
-    miningParams.value(OPTION_MINING_CPU_CORE_COUNT).toVariant().toUInt() : _defaultValue;
-}
-
 QString Settings::getWalletFile() const {
   QReadLocker lock(&m_lock);
   return m_settings.contains(OPTION_WALLET_WALLET_FILE) ? m_settings.value(OPTION_WALLET_WALLET_FILE).toString() :
@@ -465,19 +411,6 @@ QStringList Settings::getRecentWalletList() const {
   if (m_settings.contains(OPTION_RECENT_WALLETS)) {
     QJsonArray recentWalletArray = m_settings.value(OPTION_RECENT_WALLETS).toArray();
     for (const auto& item : recentWalletArray) {
-      res << item.toString();
-    }
-  }
-
-  return res;
-}
-
-QStringList Settings::getMiningPoolList() const {
-  QReadLocker lock(&m_lock);
-  QStringList res;
-  if (m_settings.contains(OPTION_MINING_POOLS)) {
-    QJsonArray miningPoolArray = m_settings.value(OPTION_MINING_POOLS).toArray();
-    for (const auto& item : miningPoolArray) {
       res << item.toString();
     }
   }
@@ -645,53 +578,10 @@ void Settings::setRecentWalletList(const QStringList &_recentWalletList) {
   notifyObservers();
 }
 
-void Settings::setMiningCpuCoreCount(quint32 _cpuCoreCount) {
-  QWriteLocker lock(&m_lock);
-  QJsonObject miningParamsObject = m_settings.value(OPTION_MINING_PARAMS).toObject();
-  miningParamsObject.insert(OPTION_MINING_CPU_CORE_COUNT, static_cast<int>(_cpuCoreCount));
-  m_settings.insert(OPTION_MINING_PARAMS, miningParamsObject);
-  saveSettings();
-}
-
-void Settings::setMiningOnLockedScreenEnabled(bool _enable) {
-  {
-    QWriteLocker lock(&m_lock);
-    QJsonObject miningParamsObject = m_settings.value(OPTION_MINING_PARAMS).toObject();
-    miningParamsObject.insert(OPTION_MINING_ON_LOCKED_SCREEN, _enable);
-    m_settings.insert(OPTION_MINING_PARAMS, miningParamsObject);
-    saveSettings();
-  }
-
-  notifyObservers();
-}
-
-
-void Settings::setMiningPoolList(const QStringList &_miningPoolList) {
-  {
-    QWriteLocker lock(&m_lock);
-    m_settings.insert(OPTION_MINING_POOLS, QJsonArray::fromStringList(_miningPoolList));
-    saveSettings();
-  }
-
-  notifyObservers();
-}
-
 void Settings::setRemoteNodeList(const QStringList &_remoteNodeList) {
   {
     QWriteLocker lock(&m_lock);
     m_settings.insert(OPTION_REMOTE_NODES, QJsonArray::fromStringList(_remoteNodeList));
-    saveSettings();
-  }
-
-  notifyObservers();
-}
-
-void Settings::setMiningPoolSwitchStrategy(const QString& _miningPoolSwitchStrategy) {
-  {
-    QWriteLocker lock(&m_lock);
-    QJsonObject miningParamsObject = m_settings.value(OPTION_MINING_PARAMS).toObject();
-    miningParamsObject.insert(OPTION_MINING_POOL_SWITCH_STRATEGY, _miningPoolSwitchStrategy);
-    m_settings.insert(OPTION_MINING_PARAMS, miningParamsObject);
     saveSettings();
   }
 
