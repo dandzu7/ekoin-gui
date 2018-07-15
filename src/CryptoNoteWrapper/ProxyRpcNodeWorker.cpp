@@ -29,7 +29,8 @@ namespace WalletGui {
 
 ProxyRpcNodeWorker::ProxyRpcNodeWorker(const CryptoNote::Currency& _currency, Logging::ILogger& _loggerManager, Logging::ILogger& _walletLogger,
   const QString& _nodeHost, quint16 _nodePort, QObject* _parent) : QObject(_parent), m_currency(_currency),
-  m_loggerManager(_loggerManager), m_walletLogger(_walletLogger), m_nodeHost(_nodeHost), m_nodePort(_nodePort) {
+  m_loggerManager(_loggerManager), m_walletLogger(_walletLogger), m_nodeHost(_nodeHost), m_nodePort(_nodePort),
+  m_blockchainExplorerAdapter(nullptr) {
 }
 
 ProxyRpcNodeWorker::~ProxyRpcNodeWorker() {
@@ -106,6 +107,9 @@ void ProxyRpcNodeWorker::removeObserver(INodeAdapterObserver* _observer) {
 IBlockChainExplorerAdapter* ProxyRpcNodeWorker::getBlockChainExplorerAdapter() {
   Q_ASSERT(!m_node.isNull());
   return nullptr;
+  return m_blockchainExplorerAdapter;
+  BlockChainExplorerAdapter* blockchainExplorerAdapter = new BlockChainExplorerAdapter(*m_node, m_loggerManager, nullptr);
+          return blockchainExplorerAdapter;
 }
 
 IWalletAdapter* ProxyRpcNodeWorker::getWalletAdapter() {
@@ -115,7 +119,7 @@ IWalletAdapter* ProxyRpcNodeWorker::getWalletAdapter() {
 }
 
 void ProxyRpcNodeWorker::peerCountUpdated(size_t _count) {
-  //WalletLogger::info(tr("[RPC node] Event: Peer count updated: %1").arg(_count));
+  WalletLogger::info(tr("[RPC node] Event: Peer count updated: %1").arg(_count));
   Q_EMIT peerCountUpdatedSignal(_count);
 }
 
@@ -136,7 +140,7 @@ void ProxyRpcNodeWorker::connectionStatusUpdated(bool _connected) {
 
 void ProxyRpcNodeWorker::initImpl() {
   Q_ASSERT(m_node.isNull());
-  m_node.reset(new CryptoNote::NodeRpcProxy(m_nodeHost.toStdString(), m_nodePort, m_loggerManager));
+  m_node.reset(new CryptoNote::NodeRpcProxy(m_nodeHost.toStdString(), m_nodePort));
   m_node->addObserver(static_cast<CryptoNote::INodeObserver*>(this));
   m_node->addObserver(static_cast<CryptoNote::INodeRpcProxyObserver*>(this));
   WalletLogger::debug(tr("[RPC node] NodeRpcProxy initializing..."));
@@ -147,6 +151,10 @@ void ProxyRpcNodeWorker::initImpl() {
     } else {
       WalletLogger::critical(tr("[RPC node] NodeRpcProxy init error: %1").arg(_errorCode.message().data()));
     }
+
+    BlockChainExplorerAdapter* blockchainExplorerAdapter = new BlockChainExplorerAdapter(*m_node, m_loggerManager, nullptr);
+      blockchainExplorerAdapter->moveToThread(qApp->thread());
+      m_blockchainExplorerAdapter = blockchainExplorerAdapter;
 
     WalletLogger::debug(tr("[RPC node] NodeRpcProxy init result: %1").arg(_errorCode.value()));
   });

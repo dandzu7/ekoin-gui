@@ -25,6 +25,7 @@
 #include "IBlockChainExplorerAdapter.h"
 #include "InProcessNodeAdapter.h"
 #include "ProxyRpcNodeAdapter.h"
+#include "Settings/Settings.h"
 
 #include "CryptoNoteCore/TransactionExtra.h"
 
@@ -33,7 +34,7 @@ namespace WalletGui {
 namespace {
 
 const int AUTO_CONNECTION_INTERVAL = 1000;
-const char OLD_CORE_LOG_FILE_NAME[] = "karbowanecwallet.log";
+const char OLD_CORE_LOG_FILE_NAME[] = "karbowallet.log";
 
 }
 
@@ -376,6 +377,7 @@ void CryptoNoteAdapter::initRemoteRpcNode() {
   m_nodeAdapter = new ProxyRpcNodeAdapter(m_currency, m_coreLogger, m_walletLogger, m_remoteDaemonUrl.host(), m_remoteDaemonUrl.port(), this);
   m_nodeAdapter->addObserver(this);
   m_nodeAdapter->init();
+  Settings::instance().setOnRemote(true);
 }
 
 void CryptoNoteAdapter::onLocalDaemonNotFound() {
@@ -387,6 +389,7 @@ void CryptoNoteAdapter::onLocalDaemonNotFound() {
   nodeAdapter->deleteLater();
   m_nodeAdapter = nullptr;
   initInProcessNode();
+  //initRemoteRpcNode();
 }
 
 void CryptoNoteAdapter::configureLogger(Logging::LoggerManager& _logger, const QString& _logFilePath, bool _debug) {

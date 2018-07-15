@@ -34,9 +34,9 @@ namespace System {
 }
 
 namespace CryptoNote {
-  class RocksDBWrapper;
   class Currency;
   class Core;
+  class core;
   class CryptoNoteProtocolHandler;
   class NodeServer;
   class InProcessNode;
@@ -76,8 +76,7 @@ public:
 private:
   const CryptoNote::Currency& m_currency;
   Logging::ILogger& m_loggerManager;
-  QScopedPointer<CryptoNote::RocksDBWrapper> m_database;
-  QScopedPointer<CryptoNote::Core> m_core;
+  QScopedPointer<CryptoNote::core> m_core;
   Logging::ILogger& m_walletLogger;
   QScopedPointer<System::Dispatcher> m_dispatcher;
   QScopedPointer<CryptoNote::CryptoNoteProtocolHandler> m_protocolHandler;

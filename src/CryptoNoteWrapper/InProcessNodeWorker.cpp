@@ -33,12 +33,9 @@
 #include "WalletGreenAdapter.h"
 
 #include "CryptoNoteCore/Core.h"
+#include "CryptoNoteCore/ICore.h"
+#include "CryptoNoteCore/CoreConfig.h"
 #include "CryptoNoteCore/CryptoNoteTools.h"
-#include "CryptoNoteCore/DatabaseBlockchainCache.h"
-#include "CryptoNoteCore/DatabaseBlockchainCacheFactory.h"
-#include "CryptoNoteCore/DataBaseErrors.h"
-#include "CryptoNoteCore/MainChainStorage.h"
-#include "CryptoNoteCore/RocksDBWrapper.h"
 #include "CryptoNoteProtocol/CryptoNoteProtocolHandler.h"
 #include "InProcessNode/InProcessNode.h"
 #include "Logging/LoggerManager.h"
@@ -228,7 +225,6 @@ void InProcessNodeWorker::initImpl() {
     m_protocolHandler.reset();
     m_core.reset();
     m_dispatcher.reset();
-    m_database.reset();
   });
 
   InitStatus status = initCore();
@@ -239,7 +235,7 @@ void InProcessNodeWorker::initImpl() {
 
   status = initNodeServer();
   if (status != INIT_SUCCESS) {
-    m_core->save();
+    //m_core->save();
     Q_EMIT initCompletedSignal(status);
     return;
   }
@@ -247,7 +243,7 @@ void InProcessNodeWorker::initImpl() {
   status = initInProcessNode();
   if (status != INIT_SUCCESS) {
     m_nodeServer->deinit();
-    m_core->save();
+    //m_core->save();
     Q_EMIT initCompletedSignal(status);
     return;
   }
@@ -267,8 +263,7 @@ void InProcessNodeWorker::initImpl() {
   m_dispatcher->yield();
   m_node->shutdown();
   m_nodeServer->deinit();
-  m_core->save();
-  m_database->shutdown();
+  //m_core->save();
   m_dispatcher->yield();
   Q_EMIT deinitCompletedSignal();
 }
@@ -280,64 +275,30 @@ void InProcessNodeWorker::deinitImpl() {
 }
 
 INodeAdapter::InitStatus InProcessNodeWorker::initCore() {
-  Q_ASSERT(m_core.isNull());
+  //Q_ASSERT(m_core.isNull());
   WalletLogger::debug(tr("[Embedded node] Core initializing..."));
   try {
-    CryptoNote::Checkpoints checkpoints(m_loggerManager);
-    if (!Settings::instance().isTestnet()) {
-      for (const CryptoNote::CheckpointData& checkpoint : CryptoNote::CHECKPOINTS) {
-        checkpoints.addCheckpoint(checkpoint.index, checkpoint.blockId);
-      }
-    }
-
-    CryptoNote::DataBaseConfig dbConfig;
-
-    dbConfig.setDataDir(std::string(Settings::instance().getDataDir().absolutePath().toLocal8Bit().data()));
-    dbConfig.setReadCacheSize(128 * 1024 * 1024);
-    dbConfig.setWriteBufferSize(256 * 1024 * 1024);
-    dbConfig.setTestnet(Settings::instance().isTestnet());
-
-    QString blocksFilePath = Settings::instance().getDataDir().absoluteFilePath(QString::fromStdString(m_currency.blocksFileName()));
-    QString indexesFilePath = Settings::instance().getDataDir().absoluteFilePath(QString::fromStdString(m_currency.blockIndexesFileName()));
-    std::unique_ptr<CryptoNote::IMainChainStorage> mainChainStorage(new CryptoNote::MainChainStorage(std::string(blocksFilePath.toLocal8Bit().data()), indexesFilePath.toStdString()));
-    if (mainChainStorage->getBlockCount() == 0) {
-      CryptoNote::RawBlock genesis;
-      genesis.block = CryptoNote::toBinaryArray(m_currency.genesisBlock());
-      mainChainStorage->pushBlock(genesis);
-    }
 
     m_dispatcher.reset(new System::Dispatcher);
-    m_database.reset(new CryptoNote::RocksDBWrapper(m_loggerManager));
-    try {
-      m_database->init(dbConfig);
-      if (!CryptoNote::DatabaseBlockchainCache::checkDBSchemeVersion(*m_database, m_loggerManager))
-      {
-        m_database->shutdown();
-        m_database->destoy(dbConfig);
-        m_database->init(dbConfig);
-      }
-    } catch (const std::system_error& _error) {
-      m_database.reset();
-      m_dispatcher.reset();
-      if (_error.code().value() == static_cast<int>(CryptoNote::error::DataBaseErrorCodes::IO_ERROR)) {
-        return INIT_DB_IN_USAGE;
-      }
 
-      return INIT_DB_FAILED;
-    } catch (const std::exception& _error) {
-      m_database.reset();
-      m_dispatcher.reset();
-      return INIT_DB_FAILED;
+    CryptoNote::Checkpoints checkpoints(m_loggerManager);
+
+    if (!Settings::instance().isTestnet()) {
+      for (const CryptoNote::CheckpointData& checkpoint : CryptoNote::CHECKPOINTS) {
+        checkpoints.add_checkpoint(checkpoint.height, checkpoint.blockId);
+      }
     }
 
+    m_core.reset(new CryptoNote::core(m_currency, nullptr, m_loggerManager, true));
 
-    m_core.reset(new CryptoNote::Core(m_currency, m_loggerManager, std::move(checkpoints), *m_dispatcher,
-      std::unique_ptr<CryptoNote::IBlockchainCacheFactory>(new CryptoNote::DatabaseBlockchainCacheFactory(*m_database, m_loggerManager)),
-      std::move(mainChainStorage)));
-    m_core->load();
+    if (!Settings::instance().isTestnet()) {
+       //*m_core.set_checkpoints(std::move(checkpoints));
+    }
+    //*m_core.set_cryptonote_protocol(&m_protocolHandler);
+
     m_protocolHandler.reset(new CryptoNote::CryptoNoteProtocolHandler(m_currency, *m_dispatcher, *m_core, nullptr, m_loggerManager));
     m_nodeServer.reset(new CryptoNote::NodeServer(*m_dispatcher, *m_protocolHandler, m_loggerManager));
-    m_node.reset(new CryptoNote::InProcessNode(*m_core, *m_protocolHandler, *m_dispatcher));
+    m_node.reset(new CryptoNote::InProcessNode(*m_core, *m_protocolHandler));
     m_protocolHandler->set_p2p_endpoint(m_nodeServer.data());
   } catch (const std::runtime_error& _error) {
     WalletLogger::critical(tr("Core init error: %1").arg(_error.what()));
