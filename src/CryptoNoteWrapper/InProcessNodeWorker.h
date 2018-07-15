@@ -21,6 +21,7 @@
 #include <QMap>
 #include <QMetaObject>
 
+#include "CryptoNoteCore/CoreConfig.h"
 #include "INodeAdapter.h"
 #include "INode.h"
 
@@ -84,7 +85,7 @@ private:
   QScopedPointer<CryptoNote::InProcessNode> m_node;
   IBlockChainExplorerAdapter* m_blockchainExplorerAdapter;
   QMap<INodeAdapterObserver*, QList<QMetaObject::Connection>> m_observerConnections;
-
+  CryptoNote::CoreConfig makeCoreConfig() const;
 
   Q_INVOKABLE void initImpl();
   Q_INVOKABLE void deinitImpl();

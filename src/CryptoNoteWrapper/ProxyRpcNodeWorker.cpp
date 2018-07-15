@@ -109,7 +109,7 @@ IBlockChainExplorerAdapter* ProxyRpcNodeWorker::getBlockChainExplorerAdapter() {
   return nullptr;
   return m_blockchainExplorerAdapter;
   BlockChainExplorerAdapter* blockchainExplorerAdapter = new BlockChainExplorerAdapter(*m_node, m_loggerManager, nullptr);
-          return blockchainExplorerAdapter;
+  return blockchainExplorerAdapter;
 }
 
 IWalletAdapter* ProxyRpcNodeWorker::getWalletAdapter() {

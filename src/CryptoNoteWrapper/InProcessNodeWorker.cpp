@@ -34,7 +34,6 @@
 
 #include "CryptoNoteCore/Core.h"
 #include "CryptoNoteCore/ICore.h"
-#include "CryptoNoteCore/CoreConfig.h"
 #include "CryptoNoteCore/CryptoNoteTools.h"
 #include "CryptoNoteProtocol/CryptoNoteProtocolHandler.h"
 #include "InProcessNode/InProcessNode.h"
@@ -275,7 +274,7 @@ void InProcessNodeWorker::deinitImpl() {
 }
 
 INodeAdapter::InitStatus InProcessNodeWorker::initCore() {
-  //Q_ASSERT(m_core.isNull());
+  Q_ASSERT(m_core.isNull());
   WalletLogger::debug(tr("[Embedded node] Core initializing..."));
   try {
 
@@ -292,11 +291,19 @@ INodeAdapter::InitStatus InProcessNodeWorker::initCore() {
     m_core.reset(new CryptoNote::core(m_currency, nullptr, m_loggerManager, true));
 
     if (!Settings::instance().isTestnet()) {
-       //*m_core.set_checkpoints(std::move(checkpoints));
+      m_core->set_checkpoints(std::move(checkpoints));
     }
-    //*m_core.set_cryptonote_protocol(&m_protocolHandler);
 
     m_protocolHandler.reset(new CryptoNote::CryptoNoteProtocolHandler(m_currency, *m_dispatcher, *m_core, nullptr, m_loggerManager));
+
+    m_core->set_cryptonote_protocol(reinterpret_cast<CryptoNote::i_cryptonote_protocol*>(&m_protocolHandler));
+    //m_core->set_cryptonote_protocol(&m_protocolHandler->i_cryptonote_protocol);
+
+
+    CryptoNote::CoreConfig coreConfig = makeCoreConfig();
+
+    m_core->init(coreConfig, CryptoNote::MinerConfig(), true);
+
     m_nodeServer.reset(new CryptoNote::NodeServer(*m_dispatcher, *m_protocolHandler, m_loggerManager));
     m_node.reset(new CryptoNote::InProcessNode(*m_core, *m_protocolHandler));
     m_protocolHandler->set_p2p_endpoint(m_nodeServer.data());
@@ -349,6 +356,15 @@ INodeAdapter::InitStatus InProcessNodeWorker::initInProcessNode() {
   }
 
   return INIT_SUCCESS;
+}
+
+CryptoNote::CoreConfig InProcessNodeWorker::makeCoreConfig() const {
+  CryptoNote::CoreConfig config;
+  boost::program_options::variables_map options;
+  boost::any dataDir = std::string(Settings::instance().getDataDir().absolutePath().toLocal8Bit().data());
+  options.insert(std::make_pair("data-dir", boost::program_options::variable_value(dataDir, false)));
+  config.init(options);
+  return config;
 }
 
 }
