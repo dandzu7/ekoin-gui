@@ -362,7 +362,8 @@ QCalendarWidget QMenu {
 }
 
 #m_overviewBalanceFrame,
-#m_overviewNodeFrame
+#m_overviewNodeFrame,
+#m_overviewPoolFrame
 {
   background-color: #EFF3FA;
   border: none;
