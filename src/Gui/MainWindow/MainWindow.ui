@@ -663,7 +663,7 @@
      </widget>
     </item>
     <item>
-     <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,0,0,0,0,0,0,0,0">
+     <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,0,0,0,0,0,0,0">
       <property name="spacing">
        <number>0</number>
       </property>
@@ -806,7 +806,7 @@
              <verstretch>0</verstretch>
             </sizepolicy>
            </property>
-		   <property name="focusPolicy">
+           <property name="focusPolicy">
             <enum>Qt::NoFocus</enum>
            </property>
            <property name="text">
@@ -820,7 +820,7 @@
            </attribute>
           </widget>
          </item>
-		 <item>
+         <item>
           <spacer name="verticalSpacer">
            <property name="orientation">
             <enum>Qt::Vertical</enum>
@@ -929,7 +929,7 @@
      <x>0</x>
      <y>0</y>
      <width>1273</width>
-     <height>20</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -956,6 +956,7 @@
     <addaction name="m_autostartAction"/>
     <addaction name="m_minimizeToTrayAction"/>
     <addaction name="m_closeToTrayAction"/>
+    <addaction name="m_manualFeeAction"/>
     <addaction name="separator"/>
     <addaction name="m_preferencesAction"/>
     <addaction name="menuThemes"/>
@@ -1180,6 +1181,14 @@
   <action name="m_createPaymentRequestAction">
    <property name="text">
     <string>Create payment request</string>
+   </property>
+  </action>
+  <action name="m_manualFeeAction">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Enable manual fee override</string>
    </property>
   </action>
  </widget>
@@ -1781,6 +1790,22 @@
     <hint type="destinationlabel">
      <x>80</x>
      <y>195</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>m_manualFeeAction</sender>
+   <signal>triggered(bool)</signal>
+   <receiver>m_sendFrame</receiver>
+   <slot>enableManualFee(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>636</x>
+     <y>411</y>
     </hint>
    </hints>
   </connection>
