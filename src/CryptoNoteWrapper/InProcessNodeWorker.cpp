@@ -169,6 +169,17 @@ CryptoNote::BlockHeaderInfo InProcessNodeWorker::getLastLocalBlockInfo() const {
   return CryptoNote::BlockHeaderInfo();
 }
 
+quint64 InProcessNodeWorker::getMinimalFee() const {
+  Q_ASSERT(!m_node.isNull());
+  try {
+    return m_node->getMinimalFee();
+  } catch (const std::exception& _error) {
+    WalletLogger::critical(tr("[Embedded node] Get minimal fee error: %1").arg(_error.what()));
+  }
+
+  return m_currency.minimumFee();
+}
+
 void InProcessNodeWorker::addObserver(INodeAdapterObserver* _observer) {
   QObject* observer = dynamic_cast<QObject*>(_observer);
   Q_ASSERT(observer != nullptr);
