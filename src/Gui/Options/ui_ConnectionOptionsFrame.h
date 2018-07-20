@@ -76,7 +76,7 @@ public:
         verticalLayout_5->setContentsMargins(25, 40, 49, -1);
         widget = new QWidget(ConnectionOptionsFrame);
         widget->setObjectName(QStringLiteral("widget"));
-        QSizePolicy sizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
+        QSizePolicy sizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
         sizePolicy.setHorizontalStretch(0);
         sizePolicy.setVerticalStretch(0);
         sizePolicy.setHeightForWidth(widget->sizePolicy().hasHeightForWidth());
@@ -97,6 +97,8 @@ public:
 
         m_autoHelperLabel = new WalletGui::WalletSmallGrayTextLabel(widget);
         m_autoHelperLabel->setObjectName(QStringLiteral("m_autoHelperLabel"));
+        sizePolicy.setHeightForWidth(m_autoHelperLabel->sizePolicy().hasHeightForWidth());
+        m_autoHelperLabel->setSizePolicy(sizePolicy);
         m_autoHelperLabel->setAlignment(Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop);
         m_autoHelperLabel->setWordWrap(true);
         m_autoHelperLabel->setIndent(0);
@@ -125,6 +127,8 @@ public:
 
         m_embeddedHelperLabel = new WalletGui::WalletSmallGrayTextLabel(widget_2);
         m_embeddedHelperLabel->setObjectName(QStringLiteral("m_embeddedHelperLabel"));
+        sizePolicy.setHeightForWidth(m_embeddedHelperLabel->sizePolicy().hasHeightForWidth());
+        m_embeddedHelperLabel->setSizePolicy(sizePolicy);
         m_embeddedHelperLabel->setAlignment(Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop);
         m_embeddedHelperLabel->setWordWrap(true);
         m_embeddedHelperLabel->setIndent(0);
@@ -181,6 +185,8 @@ public:
 
         m_localHelperLabel = new WalletGui::WalletSmallGrayTextLabel(widget_3);
         m_localHelperLabel->setObjectName(QStringLiteral("m_localHelperLabel"));
+        sizePolicy.setHeightForWidth(m_localHelperLabel->sizePolicy().hasHeightForWidth());
+        m_localHelperLabel->setSizePolicy(sizePolicy);
         m_localHelperLabel->setAlignment(Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop);
         m_localHelperLabel->setWordWrap(true);
         m_localHelperLabel->setIndent(0);
@@ -196,7 +202,7 @@ public:
         sizePolicy.setHeightForWidth(widget_4->sizePolicy().hasHeightForWidth());
         widget_4->setSizePolicy(sizePolicy);
         widget_4->setMinimumSize(QSize(0, 70));
-        widget_4->setMaximumSize(QSize(16777215, 70));
+        widget_4->setMaximumSize(QSize(16777215, 100));
         verticalLayout_4 = new QVBoxLayout(widget_4);
         verticalLayout_4->setSpacing(3);
         verticalLayout_4->setObjectName(QStringLiteral("verticalLayout_4"));
@@ -252,6 +258,9 @@ public:
 
         m_remoteHelperLabel = new WalletGui::WalletSmallGrayTextLabel(widget_4);
         m_remoteHelperLabel->setObjectName(QStringLiteral("m_remoteHelperLabel"));
+        sizePolicy.setHeightForWidth(m_remoteHelperLabel->sizePolicy().hasHeightForWidth());
+        m_remoteHelperLabel->setSizePolicy(sizePolicy);
+        m_remoteHelperLabel->setMinimumSize(QSize(0, 70));
         m_remoteHelperLabel->setAlignment(Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop);
         m_remoteHelperLabel->setWordWrap(true);
         m_remoteHelperLabel->setIndent(0);
@@ -262,7 +271,7 @@ public:
 
         verticalLayout_5->addWidget(widget_4);
 
-        verticalSpacer = new QSpacerItem(665, 61, QSizePolicy::Minimum, QSizePolicy::Expanding);
+        verticalSpacer = new QSpacerItem(665, 41, QSizePolicy::Minimum, QSizePolicy::Expanding);
 
         verticalLayout_5->addItem(verticalSpacer);
 

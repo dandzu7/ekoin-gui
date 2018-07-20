@@ -140,13 +140,13 @@ public:
     {
         if (MainWindow->objectName().isEmpty())
             MainWindow->setObjectName(QStringLiteral("MainWindow"));
-        MainWindow->resize(1273, 824);
+        MainWindow->resize(1100, 700);
         QSizePolicy sizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
         sizePolicy.setHorizontalStretch(0);
         sizePolicy.setVerticalStretch(0);
         sizePolicy.setHeightForWidth(MainWindow->sizePolicy().hasHeightForWidth());
         MainWindow->setSizePolicy(sizePolicy);
-        MainWindow->setMinimumSize(QSize(1260, 600));
+        MainWindow->setMinimumSize(QSize(1100, 600));
         MainWindow->setMaximumSize(QSize(16777215, 16777215));
         QIcon icon;
         icon.addFile(QStringLiteral(":/images/Karbovanets"), QSize(), QIcon::Normal, QIcon::Off);
@@ -593,7 +593,7 @@ public:
         MainWindow->setCentralWidget(centralwidget);
         menubar = new QMenuBar(MainWindow);
         menubar->setObjectName(QStringLiteral("menubar"));
-        menubar->setGeometry(QRect(0, 0, 1273, 21));
+        menubar->setGeometry(QRect(0, 0, 1100, 21));
         menuFile = new QMenu(menubar);
         menuFile->setObjectName(QStringLiteral("menuFile"));
         menuSettings = new QMenu(menubar);

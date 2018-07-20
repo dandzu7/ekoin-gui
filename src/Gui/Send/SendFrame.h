@@ -103,6 +103,7 @@ private:
   void amountStringChanged(const QString& _amountString);
   void addressChanged(const QString& _address);
   void onAddressFound(const QString& _address);
+  void getRemoteNodeFeeAdrees();
   bool readyToSend() const;
 
   Q_SLOT void addRecipientClicked();

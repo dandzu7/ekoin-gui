@@ -35,7 +35,7 @@
    <item>
     <widget class="QWidget" name="widget" native="true">
      <property name="sizePolicy">
-      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
@@ -80,6 +80,12 @@
       </item>
       <item alignment="Qt::AlignTop">
        <widget class="WalletGui::WalletSmallGrayTextLabel" name="m_autoHelperLabel">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="text">
          <string>Wallet will connect to local Karbo daemon process on port 32348. In case of no local daemon running it will use an in-wallet embedded node implementation.</string>
         </property>
@@ -100,7 +106,7 @@
    <item>
     <widget class="QWidget" name="widget_2" native="true">
      <property name="sizePolicy">
-      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
@@ -145,6 +151,12 @@
       </item>
       <item alignment="Qt::AlignTop">
        <widget class="WalletGui::WalletSmallGrayTextLabel" name="m_embeddedHelperLabel">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="text">
          <string>An in-wallet embedded Karbo node will be used.</string>
         </property>
@@ -165,7 +177,7 @@
    <item>
     <widget class="QWidget" name="widget_3" native="true">
      <property name="sizePolicy">
-      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
@@ -269,6 +281,12 @@
       </item>
       <item alignment="Qt::AlignTop">
        <widget class="WalletGui::WalletSmallGrayTextLabel" name="m_localHelperLabel">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="text">
          <string>Wallet will connect to local Karbo daemon process. Please specify daemon's port.</string>
         </property>
@@ -289,7 +307,7 @@
    <item>
     <widget class="QWidget" name="widget_4" native="true">
      <property name="sizePolicy">
-      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
@@ -303,7 +321,7 @@
      <property name="maximumSize">
       <size>
        <width>16777215</width>
-       <height>70</height>
+       <height>100</height>
       </size>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_4" stretch="0,1">
@@ -423,6 +441,18 @@
       </item>
       <item alignment="Qt::AlignTop">
        <widget class="WalletGui::WalletSmallGrayTextLabel" name="m_remoteHelperLabel">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>70</height>
+         </size>
+        </property>
         <property name="text">
          <string>Wallet will connect to Karbo node running on another PC in the local or global network. Please specify IP address or domain name and the port. If masternode is specified additional fee 0.25% but no more than 1 KRB is applied when sending transaction.</string>
         </property>
@@ -448,7 +478,7 @@
      <property name="sizeHint" stdset="0">
       <size>
        <width>665</width>
-       <height>61</height>
+       <height>41</height>
       </size>
      </property>
     </spacer>

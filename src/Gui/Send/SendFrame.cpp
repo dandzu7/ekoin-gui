@@ -119,13 +119,6 @@ SendFrame::SendFrame(QWidget* _parent) : QFrame(_parent), m_ui(new Ui::SendFrame
   m_ui->m_mixinSpin->setMaximum(MAX_MIXIN_VALUE);
   mixinValueChanged(m_ui->m_mixinSlider->value());
   setStyleSheet(Settings::instance().getCurrentStyle().makeStyleSheet(SEND_FRAME_STYLE_SHEET));
-  remote_node_fee = 0;
-  on_remote = Settings::instance().isOnRemote();
-  if (on_remote) {
-      QUrl currentRemoteRpcUrl = Settings::instance().getRemoteRpcUrl();
-      m_addressProvider->getAddress(currentRemoteRpcUrl);
-      connect(m_addressProvider, &AddressProvider::addressFoundSignal, this, &SendFrame::onAddressFound, Qt::QueuedConnection);
-  }
   QLabel *label1 = new WalletGui::WalletTinyGrayTextLabel(this);
   label1->setText(tr("Low"));
   QLabel *label2 = new WalletGui::WalletTinyGrayTextLabel(this);
@@ -170,6 +163,16 @@ void SendFrame::setCryptoNoteAdapter(ICryptoNoteAdapter* _cryptoNoteAdapter) {
   }
 
   amountStringChanged(QString());
+}
+
+void SendFrame::getRemoteNodeFeeAdrees() {
+    remote_node_fee = 0;
+    on_remote = Settings::instance().isOnRemote();
+    if (on_remote) {
+        QUrl currentRemoteRpcUrl = Settings::instance().getRemoteRpcUrl();
+        m_addressProvider->getAddress(currentRemoteRpcUrl);
+        connect(m_addressProvider, &AddressProvider::addressFoundSignal, this, &SendFrame::onAddressFound, Qt::QueuedConnection);
+    }
 }
 
 void SendFrame::setApplicationEventHandler(IApplicationEventHandler* _applicationEventHandler) {
@@ -227,6 +230,7 @@ void SendFrame::walletOpenError(int _initStatus) {
 }
 
 void SendFrame::walletClosed() {
+  remote_node_fee = 0;
   clearAll();
 }
 
@@ -295,6 +299,7 @@ void SendFrame::cryptoNoteAdapterInitCompleted(int _status) {
     for (auto& transfer : m_transfers) {
       transfer->setCryptoNoteAdapter(m_cryptoNoteAdapter);
     }
+  getRemoteNodeFeeAdrees();
   }
 }
 
