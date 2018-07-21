@@ -66,6 +66,8 @@ private:
   QLabel* m_syncStatusLabel;
   QLabel* m_syncStatusIconLabel;
   QLabel* m_encryptionStatusIconLabel;
+  QLabel* m_remoteModeIconLabel;
+  QLabel* m_connectionStateIconLabel;
   QLabel* m_peerCountLabel;
   QMovie* m_syncMovie;
   bool m_walletIsSynchronized;
@@ -73,6 +75,7 @@ private:
 
   void nodeStateChanged(const QModelIndex& _topLeft, const QModelIndex& _bottomRight, const QVector<int>& _roles);
   void updateStatusDescription();
+  void updateStatusConnection();
   void updateSyncState(bool _isSynchronized);
   void updateEncryptedState(bool _isEncrypted);
 };
