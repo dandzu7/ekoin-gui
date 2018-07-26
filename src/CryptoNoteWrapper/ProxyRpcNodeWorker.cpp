@@ -2,18 +2,18 @@
 //
 // This file is part of Bytecoin.
 //
-// Bytecoin is free software: you can redistribute it and/or modify
+// Karbovanets is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// Bytecoin is distributed in the hope that it will be useful,
+// Karbovanets is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with Bytecoin.  If not, see <http://www.gnu.org/licenses/>.
+// along with Karbovanets.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <QCoreApplication>
 #include <QDateTime>
@@ -29,7 +29,8 @@ namespace WalletGui {
 
 ProxyRpcNodeWorker::ProxyRpcNodeWorker(const CryptoNote::Currency& _currency, Logging::ILogger& _loggerManager, Logging::ILogger& _walletLogger,
   const QString& _nodeHost, quint16 _nodePort, QObject* _parent) : QObject(_parent), m_currency(_currency),
-  m_loggerManager(_loggerManager), m_walletLogger(_walletLogger), m_nodeHost(_nodeHost), m_nodePort(_nodePort) {
+  m_loggerManager(_loggerManager), m_walletLogger(_walletLogger), m_nodeHost(_nodeHost), m_nodePort(_nodePort),
+  m_blockchainExplorerAdapter(nullptr) {
 }
 
 ProxyRpcNodeWorker::~ProxyRpcNodeWorker() {
@@ -78,6 +79,11 @@ CryptoNote::BlockHeaderInfo ProxyRpcNodeWorker::getLastLocalBlockInfo() const {
   return m_node->getLastLocalBlockHeaderInfo();
 }
 
+quint64 ProxyRpcNodeWorker::getMinimalFee() const {
+  Q_ASSERT(!m_node.isNull());
+  return m_node->getMinimalFee();
+}
+
 void ProxyRpcNodeWorker::addObserver(INodeAdapterObserver* _observer) {
   QObject* observer = dynamic_cast<QObject*>(_observer);
   Q_ASSERT(observer != nullptr);
@@ -87,6 +93,8 @@ void ProxyRpcNodeWorker::addObserver(INodeAdapterObserver* _observer) {
   m_observerConnections[_observer] << connect(this, SIGNAL(localBlockchainUpdatedSignal(CryptoNote::BlockHeaderInfo)), observer, SLOT(localBlockchainUpdated(CryptoNote::BlockHeaderInfo)), Qt::QueuedConnection);
   m_observerConnections[_observer] << connect(this, SIGNAL(lastKnownBlockHeightUpdatedSignal(quint32)), observer, SLOT(lastKnownBlockHeightUpdated(quint32)), Qt::QueuedConnection);
   m_observerConnections[_observer] << connect(this, SIGNAL(connectionStatusUpdatedSignal(bool)), observer, SLOT(connectionStatusUpdated(bool)), Qt::QueuedConnection);
+  WalletLogger::info(tr("[Application] observer"));
+
 }
 
 void ProxyRpcNodeWorker::removeObserver(INodeAdapterObserver* _observer) {
@@ -104,6 +112,9 @@ void ProxyRpcNodeWorker::removeObserver(INodeAdapterObserver* _observer) {
 IBlockChainExplorerAdapter* ProxyRpcNodeWorker::getBlockChainExplorerAdapter() {
   Q_ASSERT(!m_node.isNull());
   return nullptr;
+  return m_blockchainExplorerAdapter;
+  BlockChainExplorerAdapter* blockchainExplorerAdapter = new BlockChainExplorerAdapter(*m_node, m_loggerManager, nullptr);
+  return blockchainExplorerAdapter;
 }
 
 IWalletAdapter* ProxyRpcNodeWorker::getWalletAdapter() {
@@ -113,7 +124,7 @@ IWalletAdapter* ProxyRpcNodeWorker::getWalletAdapter() {
 }
 
 void ProxyRpcNodeWorker::peerCountUpdated(size_t _count) {
-  WalletLogger::info(tr("[RPC node] Event: Peer count updated: %1").arg(_count));
+  //WalletLogger::info(tr("[RPC node] Event: Peer count updated: %1").arg(_count));
   Q_EMIT peerCountUpdatedSignal(_count);
 }
 
@@ -134,7 +145,7 @@ void ProxyRpcNodeWorker::connectionStatusUpdated(bool _connected) {
 
 void ProxyRpcNodeWorker::initImpl() {
   Q_ASSERT(m_node.isNull());
-  m_node.reset(new CryptoNote::NodeRpcProxy(m_nodeHost.toStdString(), m_nodePort, m_loggerManager));
+  m_node.reset(new CryptoNote::NodeRpcProxy(m_nodeHost.toStdString(), m_nodePort));
   m_node->addObserver(static_cast<CryptoNote::INodeObserver*>(this));
   m_node->addObserver(static_cast<CryptoNote::INodeRpcProxyObserver*>(this));
   WalletLogger::debug(tr("[RPC node] NodeRpcProxy initializing..."));
@@ -145,6 +156,10 @@ void ProxyRpcNodeWorker::initImpl() {
     } else {
       WalletLogger::critical(tr("[RPC node] NodeRpcProxy init error: %1").arg(_errorCode.message().data()));
     }
+
+    BlockChainExplorerAdapter* blockchainExplorerAdapter = new BlockChainExplorerAdapter(*m_node, m_loggerManager, nullptr);
+      blockchainExplorerAdapter->moveToThread(qApp->thread());
+      m_blockchainExplorerAdapter = blockchainExplorerAdapter;
 
     WalletLogger::debug(tr("[RPC node] NodeRpcProxy init result: %1").arg(_errorCode.value()));
   });

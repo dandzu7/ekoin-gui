@@ -1,19 +1,19 @@
 // Copyright (c) 2015-2017, The Bytecoin developers
 //
-// This file is part of Bytecoin.
+// This file is part of Karbovanets.
 //
-// Bytecoin is free software: you can redistribute it and/or modify
+// Karbovanets is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// Bytecoin is distributed in the hope that it will be useful,
+// Karbovanets is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with Bytecoin.  If not, see <http://www.gnu.org/licenses/>.
+// along with Karbovanets.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <QEventLoop>
 #include <QThread>
@@ -25,6 +25,7 @@
 #include "IBlockChainExplorerAdapter.h"
 #include "InProcessNodeAdapter.h"
 #include "ProxyRpcNodeAdapter.h"
+#include "Settings/Settings.h"
 
 #include "CryptoNoteCore/TransactionExtra.h"
 
@@ -33,14 +34,14 @@ namespace WalletGui {
 namespace {
 
 const int AUTO_CONNECTION_INTERVAL = 1000;
-const char OLD_CORE_LOG_FILE_NAME[] = "bytecoinwallet.log";
+const char OLD_CORE_LOG_FILE_NAME[] = "karbowallet.log";
 
 }
 
 CryptoNoteAdapter::CryptoNoteAdapter(const QDir& _dataDir, bool _testnet, bool _debug, QObject* _parent) : QObject(_parent),
   m_dataDir(_dataDir), m_testnet(_testnet), m_debug(_debug), m_connectionMethod(ConnectionMethod::AUTO),
   m_localDaemodPort(CryptoNote::RPC_DEFAULT_PORT), m_remoteDaemonUrl(), m_coreLogger(), m_walletLogger(),
-  m_currency(CryptoNote::CurrencyBuilder(m_coreLogger).testnet(m_testnet).currency()),
+  m_currency(CryptoNote::CurrencyBuilder(m_coreLogger).currency()),
   m_nodeAdapter(nullptr), m_autoConnectionTimerId(-1) {
 }
 
@@ -108,11 +109,15 @@ bool CryptoNoteAdapter::isValidPaymentId(const QString& _paymentId) const {
 }
 
 QString CryptoNoteAdapter::getCurrencyTicker() const {
-  return "bcn";
+  return "KRB";
 }
 
 quint64 CryptoNoteAdapter::getMinimalFee() const {
-  return m_currency.minimumFee();
+  if (m_nodeAdapter->getLastLocalBlockInfo().majorVersion < CryptoNote::BLOCK_MAJOR_VERSION_4) {
+    return m_currency.minimumFee();
+  } else {
+    return m_currency.roundUpMinFee(m_nodeAdapter->getMinimalFee(), 2);
+  }
 }
 
 quint64 CryptoNoteAdapter::getTargetTime() const {
@@ -376,6 +381,7 @@ void CryptoNoteAdapter::initRemoteRpcNode() {
   m_nodeAdapter = new ProxyRpcNodeAdapter(m_currency, m_coreLogger, m_walletLogger, m_remoteDaemonUrl.host(), m_remoteDaemonUrl.port(), this);
   m_nodeAdapter->addObserver(this);
   m_nodeAdapter->init();
+  Settings::instance().setOnRemote(true);
 }
 
 void CryptoNoteAdapter::onLocalDaemonNotFound() {
@@ -387,6 +393,7 @@ void CryptoNoteAdapter::onLocalDaemonNotFound() {
   nodeAdapter->deleteLater();
   m_nodeAdapter = nullptr;
   initInProcessNode();
+  //initRemoteRpcNode();
 }
 
 void CryptoNoteAdapter::configureLogger(Logging::LoggerManager& _logger, const QString& _logFilePath, bool _debug) {
@@ -396,7 +403,7 @@ void CryptoNoteAdapter::configureLogger(Logging::LoggerManager& _logger, const Q
   Common::JsonValue& cfgLoggers = loggerConfiguration.insert("loggers", Common::JsonValue::ARRAY);
   Common::JsonValue& fileLogger = cfgLoggers.pushBack(Common::JsonValue::OBJECT);
   fileLogger.insert("type", "file");
-  fileLogger.insert("filename", _logFilePath.toStdString());
+  fileLogger.insert("filename", std::string(_logFilePath.toLocal8Bit().data()));
   fileLogger.insert("level", static_cast<int64_t>(level));
   _logger.configure(loggerConfiguration);
 }

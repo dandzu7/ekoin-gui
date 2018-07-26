@@ -2,33 +2,34 @@
 //
 // This file is part of Bytecoin.
 //
-// Bytecoin is free software: you can redistribute it and/or modify
+// Karbovanets is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// Bytecoin is distributed in the hope that it will be useful,
+// Karbovanets is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with Bytecoin.  If not, see <http://www.gnu.org/licenses/>.
+// along with Karbovanets.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <QFileDialog>
 #include <QLabel>
 #include <QMouseEvent>
+#include <QClipboard>
 #include <QPainter>
 #include <QPropertyAnimation>
 
 #include "TransactionsFrame.h"
 #include "Settings/Settings.h"
-#include "Common/RightAlignmentColumnDelegate.h"
-#include "Common/NewTransactionDelegate.h"
-#include "Common/TransactionsAmountDelegate.h"
-#include "Common/TransactionDetailsDialog.h"
-#include "Common/TransactionsHeaderView.h"
-#include "Common/TransactionsTimeDelegate.h"
+#include "Gui/Common/RightAlignmentColumnDelegate.h"
+#include "Gui/Common/NewTransactionDelegate.h"
+#include "Gui/Common/TransactionsAmountDelegate.h"
+#include "Gui/Common/TransactionDetailsDialog.h"
+#include "Gui/Common/TransactionsHeaderView.h"
+#include "Gui/Common/TransactionsTimeDelegate.h"
 #include "FilteredByAddressTransactionsModel.h"
 #include "FilteredByAgeTransactionsModel.h"
 #include "FilteredByHashTransactionsModel.h"
@@ -83,6 +84,14 @@ TransactionsFrame::TransactionsFrame(QWidget* _parent) : QFrame(_parent), m_ui(n
   connect(m_animation, &QPropertyAnimation::finished, this, [this] {
     m_ui->m_filterButton->setEnabled(true);
   });
+  m_ui->m_transactionsView->setContextMenuPolicy(Qt::CustomContextMenu);
+  connect(m_ui->m_transactionsView, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(onCustomContextMenu(const QPoint &)));
+
+  contextMenu = new QMenu();
+  contextMenu->addAction(QString(tr("Copy transaction &hash")), this, SLOT(copyTxHash()));
+  contextMenu->addAction(QString(tr("Copy Payment &ID")), this, SLOT(copyPaymentID()));
+  contextMenu->addAction(QString(tr("Copy &amount")), this, SLOT(copyAmount()));
+  contextMenu->addAction(QString(tr("Show &details")), this, SLOT(showTxDetails()));
 }
 
 TransactionsFrame::~TransactionsFrame() {
@@ -174,7 +183,7 @@ void TransactionsFrame::transactionDoubleClicked(const QModelIndex& _index) {
     return;
   }
 
-  if (_index.data(TransactionsModel::ROLE_COLUMN).toInt() == TransactionsModel::COLUMN_HASH) {
+  if (_index.data(TransactionsModel::ROLE_COLUMN).toInt() != TransactionsModel::COLUMN_SHOW_TRANSFERS) {
     TransactionDetailsDialog dlg(m_cryptoNoteAdapter, m_transactionsModel, _index, m_mainWindow);
     dlg.exec();
   }
@@ -268,6 +277,37 @@ void TransactionsFrame::resetFilter() {
   m_ui->m_filterEndDtedit->setDateTime(currentDateTime);
   m_ui->m_filterHashEdit->clear();
   m_ui->m_filterAddressEdit->clear();
+}
+
+void TransactionsFrame::onCustomContextMenu(const QPoint &point) {
+  index = m_ui->m_transactionsView->indexAt(point);
+  if(index.data(TransactionsModel::ROLE_PAYMENT_ID).value<QString>().isEmpty()) {
+    contextMenu->actions().at(1)->setVisible(false);
+  } else {
+    contextMenu->actions().at(1)->setVisible(true);
+  }
+  contextMenu->exec(m_ui->m_transactionsView->mapToGlobal(point));
+}
+
+void TransactionsFrame::copyTxHash() {
+  QApplication::clipboard()->setText(index.sibling(index.row(), TransactionsModel::COLUMN_HASH).data().toString());
+}
+
+void TransactionsFrame::copyAmount() {
+  QApplication::clipboard()->setText(index.sibling(index.row(), TransactionsModel::COLUMN_AMOUNT).data().toString());
+}
+
+void TransactionsFrame::copyPaymentID() {
+  QApplication::clipboard()->setText(index.data(TransactionsModel::ROLE_PAYMENT_ID).value<QString>());
+}
+
+void TransactionsFrame::showTxDetails() {
+  if (!index.isValid()) {
+    return;
+  }
+
+  TransactionDetailsDialog dlg(m_cryptoNoteAdapter, m_transactionsModel, index, m_mainWindow);
+  dlg.exec();
 }
 
 }

@@ -2,18 +2,18 @@
 //
 // This file is part of Bytecoin.
 //
-// Bytecoin is free software: you can redistribute it and/or modify
+// Karbovanets is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// Bytecoin is distributed in the hope that it will be useful,
+// Karbovanets is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with Bytecoin.  If not, see <http://www.gnu.org/licenses/>.
+// along with Karbovanets.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "DarkStyle.h"
 
@@ -24,7 +24,7 @@ DarkStyle::DarkStyle() : Style("dark", "Dark") {
 }
 
 QString DarkStyle::statusBarBackgroundColor() const {
-  return "#202020";
+  return "#2E466C";
 }
 
 QString DarkStyle::statusBarFontColor() const {
@@ -32,11 +32,11 @@ QString DarkStyle::statusBarFontColor() const {
 }
 
 QString DarkStyle::headerBackgroundColor() const {
-  return "#202020";
+  return "#2E466C";
 }
 
 QString DarkStyle::headerBorderColor() const {
-  return "#202020";
+  return "#2E466C";
 }
 
 QString DarkStyle::addressFontColor() const {
@@ -48,15 +48,15 @@ QString DarkStyle::balanceFontColor() const {
 }
 
 QString DarkStyle::toolButtonBackgroundColorNormal() const {
-  return "#2e4558";
+  return "#1D3254";
 }
 
 QString DarkStyle::toolButtonBackgroundColorHover() const {
-  return "#253949";
+  return "#6582AA";
 }
 
 QString DarkStyle::toolButtonBackgroundColorPressed() const {
-  return "#1c2e3c";
+  return "#425A80";
 }
 
 QString DarkStyle::toolButtonFontColorNormal() const {

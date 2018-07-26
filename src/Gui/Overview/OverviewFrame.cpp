@@ -2,29 +2,29 @@
 //
 // This file is part of Bytecoin.
 //
-// Bytecoin is free software: you can redistribute it and/or modify
+// Karbovanets is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// Bytecoin is distributed in the hope that it will be useful,
+// Karbovanets is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with Bytecoin.  If not, see <http://www.gnu.org/licenses/>.
+// along with Karbovanets.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <QClipboard>
 #include <QDataWidgetMapper>
 
 #include "OverviewFrame.h"
-#include "Common/NewTransactionDelegate.h"
-#include "Common/TransactionDetailsDialog.h"
-#include "Common/TransactionsAmountDelegate.h"
-#include "Common/TransactionsHeaderView.h"
-#include "Common/TransactionsTimeDelegate.h"
-#include "Common/RightAlignmentColumnDelegate.h"
+#include "Gui/Common/NewTransactionDelegate.h"
+#include "Gui/Common/TransactionDetailsDialog.h"
+#include "Gui/Common/TransactionsAmountDelegate.h"
+#include "Gui/Common/TransactionsHeaderView.h"
+#include "Gui/Common/TransactionsTimeDelegate.h"
+#include "Gui/Common/RightAlignmentColumnDelegate.h"
 #include "Models/TransactionsModel.h"
 #include "Models/SortedTransactionsModel.h"
 #include "Models/WalletStateModel.h"
@@ -79,14 +79,6 @@ void OverviewFrame::setCryptoNoteAdapter(ICryptoNoteAdapter* _cryptoNoteAdapter)
   m_ui->m_overviewHeaderFrame->setCryptoNoteAdapter(m_cryptoNoteAdapter);
 }
 
-void OverviewFrame::setMiningManager(IMiningManager* _miningManager) {
-  m_ui->m_overviewHeaderFrame->setMiningManager(_miningManager);
-}
-
-void OverviewFrame::setBlogReader(INewsReader* _blogReader) {
-  m_ui->m_blogFrame->setNewsReader(_blogReader);
-}
-
 void OverviewFrame::setMainWindow(QWidget* _mainWindow) {
   m_mainWindow = _mainWindow;
   QList<QPushButton*> buttonList = m_mainWindow->findChildren<QPushButton*>("m_transactionsButton");
@@ -132,10 +124,6 @@ void OverviewFrame::setNodeStateModel(QAbstractItemModel* _model) {
 
 void OverviewFrame::setWalletStateModel(QAbstractItemModel* _model) {
   m_ui->m_overviewHeaderFrame->setWalletStateModel(_model);
-}
-
-void OverviewFrame::setMinerModel(QAbstractItemModel* _model) {
-  m_ui->m_overviewHeaderFrame->setMinerModel(_model);
 }
 
 void OverviewFrame::settingsUpdated() {

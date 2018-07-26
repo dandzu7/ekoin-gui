@@ -1,0 +1,11 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=Karbo Wallet
+Comment=Karbo wallet
+Exec=karbowallet %U
+Terminal=false
+Type=Application
+Icon=Karbovanets
+MimeType=x-scheme-handler/karbowanec;
+Categories=Office;Finance;
+Version=2.0.0

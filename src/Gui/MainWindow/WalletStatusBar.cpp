@@ -2,18 +2,18 @@
 //
 // This file is part of Bytecoin.
 //
-// Bytecoin is free software: you can redistribute it and/or modify
+// Karbovanets is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// Bytecoin is distributed in the hope that it will be useful,
+// Karbovanets is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with Bytecoin.  If not, see <http://www.gnu.org/licenses/>.
+// along with Karbovanets.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <QDataWidgetMapper>
 #include <QDateTime>
@@ -33,7 +33,7 @@ namespace WalletGui {
 
 namespace {
 
-const QDateTime EPOCH_DATE_TIME = QDateTime::fromMSecsSinceEpoch(0);
+const QDateTime EPOCH_DATE_TIME = QDateTime::fromMSecsSinceEpoch(0).toUTC();
 const int TEMP_MESSAGE_DURATION = 3000;
 const int MSECS_IN_MINUTE = 60 * 1000;
 const int MSECS_IN_HOUR = 60 * MSECS_IN_MINUTE;
@@ -84,11 +84,13 @@ QString formatTimeDiff(quint64 _timeDiff) {
 
 }
 
-WalletStatusBar::WalletStatusBar(QWidget* _parent) : QStatusBar(_parent), m_cryptoNoteAdapter(nullptr), m_nodeStateModel(nullptr), m_syncStatusLabel(new QLabel(this)),
-  m_syncStatusIconLabel(new QLabel(this)), m_encryptionStatusIconLabel(new QLabel(this)),
+WalletStatusBar::WalletStatusBar(QWidget* _parent) : QStatusBar(_parent), m_cryptoNoteAdapter(nullptr), m_nodeStateModel(nullptr), m_syncStatusLabel(new QLabel(this)), m_connectionStateIconLabel(new QLabel(this)),
+  m_syncStatusIconLabel(new QLabel(this)), m_encryptionStatusIconLabel(new QLabel(this)), m_remoteModeIconLabel(new QLabel(this)),
   m_peerCountLabel(new QLabel(this)), m_syncMovie(new QMovie(this)), m_walletIsSynchronized(false), m_checkSyncStateTimerId(-1) {
   m_syncStatusLabel->setObjectName("m_syncStatusLabel");
   m_syncStatusIconLabel->setObjectName("m_syncStatusIconLabel");
+  m_remoteModeIconLabel->setObjectName("m_remoteModeIconLabel");
+  m_connectionStateIconLabel->setObjectName("m_connectionStateIconLabel");
   m_encryptionStatusIconLabel->setObjectName("m_encryptionStatusIconLabel");
   m_peerCountLabel->setObjectName("m_peerCountLabel");
   m_syncMovie->setFileName(Settings::instance().getCurrentStyle().getWalletSyncGifFile());
@@ -97,6 +99,8 @@ WalletStatusBar::WalletStatusBar(QWidget* _parent) : QStatusBar(_parent), m_cryp
   addPermanentWidget(m_peerCountLabel);
   addPermanentWidget(m_encryptionStatusIconLabel);
   addPermanentWidget(m_syncStatusIconLabel);
+  addPermanentWidget(m_remoteModeIconLabel);
+  addPermanentWidget(m_connectionStateIconLabel);
 
   setStyleSheet(Settings::instance().getCurrentStyle().makeStyleSheet(STATUS_BAR_STYLE_SHEET_TEMPLATE));
 }
@@ -118,6 +122,7 @@ void WalletStatusBar::setNodeStateModel(QAbstractItemModel* _model) {
   stateMapper->addMapping(m_peerCountLabel, NodeStateModel::COLUMN_PEER_COUNT, "text");
   stateMapper->setCurrentIndex(0);
   connect(m_nodeStateModel, &QAbstractItemModel::dataChanged, this, &WalletStatusBar::nodeStateChanged);
+  updateStatusConnection();
 }
 
 void WalletStatusBar::updateStyle() {
@@ -228,6 +233,27 @@ void WalletStatusBar::timerEvent(QTimerEvent* _event) {
 void WalletStatusBar::nodeStateChanged(const QModelIndex& _topLeft, const QModelIndex& _bottomRight, const QVector<int>& _roles) {
   if (_roles.contains(NodeStateModel::ROLE_LOCAL_BLOCK_COUNT)) {
     updateStatusDescription();
+  } else if (_roles.contains(NodeStateModel::COLUMN_NODE_TYPE) || _roles.contains(NodeStateModel::COLUMN_CONNECTION_STATE)) {
+    updateStatusConnection();
+  }
+}
+
+void WalletStatusBar::updateStatusConnection() {
+  bool isRemote = m_nodeStateModel->index(0, NodeStateModel::COLUMN_NODE_TYPE).data(NodeStateModel::ROLE_NODE_TYPE).toInt() == static_cast<int>(NodeType::RPC);
+  bool isConnected = m_nodeStateModel->index(0, NodeStateModel::COLUMN_CONNECTION_STATE).data(NodeStateModel::ROLE_CONNECTION_STATE).toBool();
+  if (isRemote) {
+    m_remoteModeIconLabel->show();
+    m_remoteModeIconLabel->setPixmap(QPixmap(":icons/remote").scaledToHeight(16, Qt::SmoothTransformation));
+    m_remoteModeIconLabel->setToolTip("Remote mode");
+
+    QString connectionIconPath = isConnected ? ":icons/light/connected" : ":icons/light/disconnected";
+    QPixmap connectionIcon = QPixmap(connectionIconPath).scaled(16, 16, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+    m_connectionStateIconLabel->setPixmap(connectionIcon);
+    m_connectionStateIconLabel->setToolTip(isConnected ? "connected" : "disconnected");
+    m_connectionStateIconLabel->show();
+  } else {
+    m_remoteModeIconLabel->hide();
+    m_connectionStateIconLabel->hide();
   }
 }
 

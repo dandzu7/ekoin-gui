@@ -2,18 +2,18 @@
 //
 // This file is part of Bytecoin.
 //
-// Bytecoin is free software: you can redistribute it and/or modify
+// Karbovanets is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// Bytecoin is distributed in the hope that it will be useful,
+// Karbovanets is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with Bytecoin.  If not, see <http://www.gnu.org/licenses/>.
+// along with Karbovanets.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <QColor>
 #include <QEventLoop>
@@ -274,7 +274,7 @@ QVariant BlockchainModel::data(const QModelIndex &_index, int _role) const {
   case ROLE_BLOCK_DIFFICULTY:
     return static_cast<quint64>(block -> difficulty);
   case ROLE_BLOCK_IS_ORPHANED:
-    return block->isAlternative;
+    return block->isOrphaned;
   case ROLE_BLOCK_TRANSACTION_COUNT:
     return static_cast<quint64>(block -> transactions.size());
   case ROLE_BLOCK_TRANSACTIONS_SIZE:
@@ -323,7 +323,7 @@ QVariant BlockchainModel::data(const QModelIndex &_index, int _role) const {
   case ROLE_TRANSACTION_BLOCK_HASH:
     return QByteArray(reinterpret_cast<char*>(&tx.blockHash), sizeof(tx.blockHash));
   case ROLE_TRANSACTION_BLOCK_HEIGHT:
-    return static_cast<quint32>(tx.blockIndex);
+    return static_cast<quint32>(tx.blockHeight);
   default:
     break;
   }

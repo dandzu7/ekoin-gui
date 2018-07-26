@@ -2,22 +2,23 @@
 //
 // This file is part of Bytecoin.
 //
-// Bytecoin is free software: you can redistribute it and/or modify
+// Karbovanets is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// Bytecoin is distributed in the hope that it will be useful,
+// Karbovanets is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with Bytecoin.  If not, see <http://www.gnu.org/licenses/>.
+// along with Karbovanets.  If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
 
 #include <QFrame>
+#include <QPair>
 
 #include "Application/IWalletUiItem.h"
 
@@ -29,6 +30,9 @@ class AddressBookFrame;
 }
 
 namespace WalletGui {
+
+typedef QPair<QString, QString> RecepientPair;
+Q_DECLARE_METATYPE(RecepientPair);
 
 class AddressBookDelegate;
 
@@ -64,7 +68,7 @@ private:
 
   void rowsInserted(const QModelIndex& _parent, int _first, int _last);
   void rowsRemoved(const QModelIndex& _parent, int _first, int _last);
-  void sendToClicked(const QString& _address);
+  void sendToClicked(const QString& _address, const QString& _paymentid);
 
   Q_SLOT void addClicked();
   Q_SLOT void editClicked(const QPersistentModelIndex& _index);
@@ -72,7 +76,7 @@ private:
   Q_SLOT void contextMenu(const QPoint& _pos);
 
 Q_SIGNALS:
-  void sendToSignal(const QString& _address);
+  void sendToSignal(const QString& _address, const QString& _paymentid);
 };
 
 }

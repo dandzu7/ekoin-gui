@@ -2,18 +2,18 @@
 //
 // This file is part of Bytecoin.
 //
-// Bytecoin is free software: you can redistribute it and/or modify
+// Karbovanets is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// Bytecoin is distributed in the hope that it will be useful,
+// Karbovanets is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with Bytecoin.  If not, see <http://www.gnu.org/licenses/>.
+// along with Karbovanets.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <QApplication>
 #include <QClipboard>
@@ -22,8 +22,8 @@
 
 #include "AddressBookFrame.h"
 #include "AddressBookDelegate.h"
-#include "Common/QuestionDialog.h"
-#include "Common/RightAlignmentColumnDelegate.h"
+#include "Gui/Common/QuestionDialog.h"
+#include "Gui/Common/RightAlignmentColumnDelegate.h"
 #include "DonationColumnDelegate.h"
 #include "Models/AddressBookModel.h"
 #include "NewAddressDialog.h"
@@ -77,10 +77,12 @@ void AddressBookFrame::setSortedAddressBookModel(QAbstractItemModel* _model) {
   m_ui->m_addressBookView->setItemDelegateForColumn(AddressBookModel::COLUMN_ADDRESS, new RightAlignmentColumnDelegate(false, this));
   m_ui->m_addressBookView->header()->setSectionResizeMode(AddressBookModel::COLUMN_LABEL, QHeaderView::Fixed);
   m_ui->m_addressBookView->header()->setSectionResizeMode(AddressBookModel::COLUMN_ADDRESS, QHeaderView::Stretch);
+  m_ui->m_addressBookView->header()->setSectionResizeMode(AddressBookModel::COLUMN_PAYMENT_ID, QHeaderView::Stretch);
   m_ui->m_addressBookView->header()->setSectionResizeMode(AddressBookModel::COLUMN_DONATION, QHeaderView::Fixed);
   m_ui->m_addressBookView->header()->setSectionResizeMode(AddressBookModel::COLUMN_ACTION, QHeaderView::Fixed);
   m_ui->m_addressBookView->header()->setResizeContentsPrecision(-1);
-  m_ui->m_addressBookView->header()->resizeSection(AddressBookModel::COLUMN_LABEL, 250);
+  m_ui->m_addressBookView->header()->resizeSection(AddressBookModel::COLUMN_LABEL, 200);
+  m_ui->m_addressBookView->header()->resizeSection(AddressBookModel::COLUMN_PAYMENT_ID, 300);
   m_ui->m_addressBookView->header()->resizeSection(AddressBookModel::COLUMN_DONATION, 90);
   m_ui->m_addressBookView->header()->resizeSection(AddressBookModel::COLUMN_ACTION, 40);
   connect(m_sortedAddressBookModel, &QAbstractItemModel::rowsInserted, this, &AddressBookFrame::rowsInserted);
@@ -122,10 +124,11 @@ void AddressBookFrame::rowsRemoved(const QModelIndex& _parent, int _first, int _
   }
 }
 
-void AddressBookFrame::sendToClicked(const QString& _address) {
+void AddressBookFrame::sendToClicked(const QString& _address, const QString& _paymentid) {
   QAction* addRecipientAction = m_mainWindow->findChild<QAction*>("m_addRecipientAction");
   Q_ASSERT(addRecipientAction != nullptr);
-  addRecipientAction->setData(_address);
+  RecepientPair m_recepient(_address, _paymentid);
+  addRecipientAction->setData(QVariant::fromValue(m_recepient));
   addRecipientAction->trigger();
 }
 
@@ -134,8 +137,9 @@ void AddressBookFrame::addClicked() {
   if (dlg.exec() == QDialog::Accepted) {
     QString label = dlg.getLabel();
     QString address = dlg.getAddress();
+    QString paymentid = dlg.getPaymentId();
     bool isDonationAddress = dlg.hasDonationFlag();
-    m_addressBookManager->addAddress(label, address, isDonationAddress);
+    m_addressBookManager->addAddress(label, address, paymentid, isDonationAddress);
   }
 }
 
@@ -144,8 +148,9 @@ void AddressBookFrame::editClicked(const QPersistentModelIndex& _index) {
   if (dlg.exec() == QDialog::Accepted) {
     QString label = dlg.getLabel();
     QString address = dlg.getAddress();
+    QString paymentid = dlg.getPaymentId();
     bool isDonationAddress = dlg.hasDonationFlag();
-    m_addressBookManager->editAddress(_index.data(AddressBookModel::ROLE_ROW).toInt(), label, address, isDonationAddress);
+    m_addressBookManager->editAddress(_index.data(AddressBookModel::ROLE_ROW).toInt(), label, address, paymentid, isDonationAddress);
   }
 }
 
@@ -172,21 +177,26 @@ void AddressBookFrame::contextMenu(const QPoint& _pos) {
   menu.setObjectName("m_addressBookMenu");
   QAction* sendAction = new QAction(tr("Send"), &menu);
   QAction* editAction = new QAction(tr("Edit"), &menu);
-  QAction* copyAction = new QAction(tr("Copy to clipboard"), &menu);
+  QAction* copyAction = new QAction(tr("Copy address to clipboard"), &menu);
+  QAction* copyPaymentIdAction = new QAction(tr("Copy Payment ID to clipboard"), &menu);
   QAction* delAction = new QAction(tr("Delete"), &menu);
   menu.addAction(sendAction);
   menu.addAction(editAction);
   menu.addAction(copyAction);
+  menu.addAction(copyPaymentIdAction);
   menu.addAction(delAction);
 
   connect(sendAction, &QAction::triggered, [this, index]() {
-      Q_EMIT sendToSignal(index.data(AddressBookModel::ROLE_ADDRESS).toString());
+      Q_EMIT sendToSignal(index.data(AddressBookModel::ROLE_ADDRESS).toString(), index.data(AddressBookModel::ROLE_PAYMENT_ID).toString());
     });
   connect(editAction, &QAction::triggered, [this, index]() {
       Q_EMIT this->editClicked(index);
     });
   connect(copyAction, &QAction::triggered, [index]() {
       QApplication::clipboard()->setText(index.data(AddressBookModel::ROLE_ADDRESS).toString());
+    });
+  connect(copyPaymentIdAction, &QAction::triggered, [index]() {
+      QApplication::clipboard()->setText(index.data(AddressBookModel::ROLE_PAYMENT_ID).toString());
     });
   connect(delAction, &QAction::triggered, [this, index]() {
       this->deleteClicked(index);

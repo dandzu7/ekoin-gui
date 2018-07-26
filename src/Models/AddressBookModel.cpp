@@ -2,18 +2,18 @@
 //
 // This file is part of Bytecoin.
 //
-// Bytecoin is free software: you can redistribute it and/or modify
+// Karbovanets is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// Bytecoin is distributed in the hope that it will be useful,
+// Karbovanets is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with Bytecoin.  If not, see <http://www.gnu.org/licenses/>.
+// along with Karbovanets.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <QFile>
 #include <QFont>
@@ -80,6 +80,8 @@ QVariant AddressBookModel::headerData(int _section, Qt::Orientation _orientation
       return tr("Label");
     case COLUMN_ADDRESS:
       return tr("Address");
+    case COLUMN_PAYMENT_ID:
+      return tr("Payment ID");
     case COLUMN_DONATION:
       return tr("Donation");
     }
@@ -92,6 +94,8 @@ QVariant AddressBookModel::headerData(int _section, Qt::Orientation _orientation
     case COLUMN_LABEL:
       return static_cast<int>(Qt::AlignLeft | Qt::AlignVCenter);
     case COLUMN_ADDRESS:
+      return static_cast<int>(Qt::AlignRight | Qt::AlignVCenter);
+    case COLUMN_PAYMENT_ID:
       return static_cast<int>(Qt::AlignRight | Qt::AlignVCenter);
     case COLUMN_DONATION:
       return static_cast<int>(Qt::AlignCenter);
@@ -166,6 +170,8 @@ QVariant AddressBookModel::getDisplayRole(const QModelIndex& _index) const {
     return _index.data(ROLE_LABEL);
   case COLUMN_ADDRESS:
     return _index.data(ROLE_ADDRESS);
+  case COLUMN_PAYMENT_ID:
+    return _index.data(ROLE_PAYMENT_ID);
   default:
     break;
   }
@@ -188,6 +194,8 @@ QVariant AddressBookModel::getUserRole(const QModelIndex& _index, int _role) con
     return addressItem.label;
   case ROLE_ADDRESS:
     return addressItem.address;
+  case ROLE_PAYMENT_ID:
+    return addressItem.paymentId;
   case ROLE_IS_DONATION_ADDRESS:
     return addressItem.isDonationAddress;
   case ROLE_COLUMN:

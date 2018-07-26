@@ -2,18 +2,18 @@
 //
 // This file is part of Bytecoin.
 //
-// Bytecoin is free software: you can redistribute it and/or modify
+// Karbovanets is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// Bytecoin is distributed in the hope that it will be useful,
+// Karbovanets is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with Bytecoin.  If not, see <http://www.gnu.org/licenses/>.
+// along with Karbovanets.  If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
 
@@ -21,6 +21,7 @@
 #include <QMap>
 #include <QMetaObject>
 
+#include "CryptoNoteCore/CoreConfig.h"
 #include "INodeAdapter.h"
 #include "INode.h"
 
@@ -34,9 +35,9 @@ namespace System {
 }
 
 namespace CryptoNote {
-  class RocksDBWrapper;
   class Currency;
   class Core;
+  class core;
   class CryptoNoteProtocolHandler;
   class NodeServer;
   class InProcessNode;
@@ -67,6 +68,7 @@ public:
   virtual void removeObserver(INodeAdapterObserver* _observer) override;
   virtual IBlockChainExplorerAdapter* getBlockChainExplorerAdapter() override;
   virtual IWalletAdapter* getWalletAdapter() override;
+  virtual quint64 getMinimalFee() const override;
 
   // CryptoNote::INodeObserver
   virtual void peerCountUpdated(size_t _count) override;
@@ -76,8 +78,7 @@ public:
 private:
   const CryptoNote::Currency& m_currency;
   Logging::ILogger& m_loggerManager;
-  QScopedPointer<CryptoNote::RocksDBWrapper> m_database;
-  QScopedPointer<CryptoNote::Core> m_core;
+  QScopedPointer<CryptoNote::core> m_core;
   Logging::ILogger& m_walletLogger;
   QScopedPointer<System::Dispatcher> m_dispatcher;
   QScopedPointer<CryptoNote::CryptoNoteProtocolHandler> m_protocolHandler;
@@ -85,7 +86,7 @@ private:
   QScopedPointer<CryptoNote::InProcessNode> m_node;
   IBlockChainExplorerAdapter* m_blockchainExplorerAdapter;
   QMap<INodeAdapterObserver*, QList<QMetaObject::Connection>> m_observerConnections;
-
+  CryptoNote::CoreConfig makeCoreConfig() const;
 
   Q_INVOKABLE void initImpl();
   Q_INVOKABLE void deinitImpl();

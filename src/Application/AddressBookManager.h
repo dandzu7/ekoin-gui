@@ -2,18 +2,18 @@
 //
 // This file is part of Bytecoin.
 //
-// Bytecoin is free software: you can redistribute it and/or modify
+// Karbovanets is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// Bytecoin is distributed in the hope that it will be useful,
+// Karbovanets is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with Bytecoin.  If not, see <http://www.gnu.org/licenses/>.
+// along with Karbovanets.  If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
 
@@ -41,25 +41,20 @@ public:
   virtual quintptr getAddressCount() const override;
   virtual AddressItem getAddress(quintptr _addressIndex) const override;
   virtual quintptr findAddressByAddress(const QString& _address) const override;
+  virtual quintptr findAddressByPaymentId(const QString& _paymentid) const override;
   virtual quintptr findAddressByLabel(const QString& _label) const override;
-  virtual quintptr findAddress(const QString& _label, const QString& _address) const override;
+  virtual quintptr findAddress(const QString& _label, const QString& _address, const QString &_paymentid) const override;
   virtual quintptr findAddress(const QString& _label, const QString& _address, bool _isDonationAddress) const override;
-  virtual void addAddress(const QString& _label, const QString& _address, bool _isDonationAddress) override;
-  virtual void editAddress(quintptr _addressIndex, const QString& _label, const QString& _address, bool _isDonationAddress) override;
+  virtual void addAddress(const QString& _label, const QString& _address, const QString &_paymentid, bool _isDonationAddress) override;
+  virtual void editAddress(quintptr _addressIndex, const QString& _label, const QString& _address, const QString &_paymentid, bool _isDonationAddress) override;
   virtual void removeAddress(quintptr _addressIndex) override;
   virtual void addObserver(IAddressBookManagerObserver* _observer) override;
   virtual void removeObserver(IAddressBookManagerObserver* _observer) override;
 
   // IDonationManager
-  virtual bool isDonationMiningEnabled() const override;
-  virtual QString getDonationMiningAddress() const override;
-  virtual int getDonationMiningAmount() const override;
   virtual bool isDonationChangeEnabled() const override;
   virtual QString getDonationChangeAddress() const override;
   virtual int getDonationChangeAmount() const override;
-  virtual void setDonationMiningEnabled(bool _on) override;
-  virtual void setDonationMiningAddress(const QString& _address) override;
-  virtual void setDonationMiningAmount(int _amount) override;
   virtual void setDonationChangeEnabled(bool _on) override;
   virtual void setDonationChangeAddress(const QString& _address) override;
   virtual void setDonationChangeAmount(int _amount) override;
@@ -86,6 +81,7 @@ private:
   QJsonObject m_addressBookObject;
   QHash<QString, quintptr> m_addressIndexes;
   QHash<QString, quintptr> m_labelIndexes;
+  QHash<QString, quintptr> m_paymentIdIndexes;
 
   void saveAddressBook();
   void buildIndexes();

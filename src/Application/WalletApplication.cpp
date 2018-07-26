@@ -1,19 +1,19 @@
 // Copyright (c) 2015-2017, The Bytecoin developers
 //
-// This file is part of Bytecoin.
+// This file is part of Karbovanets.
 //
-// Bytecoin is free software: you can redistribute it and/or modify
+// Karbovanets is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// Bytecoin is distributed in the hope that it will be useful,
+// Karbovanets is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with Bytecoin.  If not, see <http://www.gnu.org/licenses/>.
+// along with Karbovanets.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <QEvent>
 #include <QFileOpenEvent>
@@ -36,18 +36,16 @@
 #include "WalletApplication.h"
 #include "AddressBookManager.h"
 #include "ApplicationEventHandler.h"
-#include "BlogReader.h"
 #include "CommandLineParser.h"
-#include "Common/ExitWidget.h"
-#include "Common/P2pBindPortErrorDialog.h"
-#include "Common/QuestionDialog.h"
-#include "Common/WalletOkButton.h"
+#include "Gui/Common/ExitWidget.h"
+#include "Gui/Common/P2pBindPortErrorDialog.h"
+#include "Gui/Common/QuestionDialog.h"
+#include "Gui/Common/WalletOkButton.h"
 #include "CryptoNoteWrapper/CryptoNoteAdapter.h"
 #include "IBlockChainExplorerAdapter.h"
 #include "LogFileWatcher.h"
 #include "WalletLogger/WalletLogger.h"
-#include "MainWindow/MainWindow.h"
-#include "MiningManager.h"
+#include "Gui/MainWindow/MainWindow.h"
 #include "OptimizationManager.h"
 #include "QJsonRpc/JsonRpcServer.h"
 #include "Settings/Settings.h"
@@ -59,7 +57,7 @@ namespace WalletGui {
 
 namespace {
 
-const char BYTECOIN_URI_SCHEME_NAME[] = "bytecoin";
+const char URI_SCHEME_NAME[] = "karbowanec";
 const QRegularExpression LOG_SPLASH_REG_EXP("\\[Core\\] Imported block with index");
 
 quint16 findPort() {
@@ -102,9 +100,9 @@ bool rmDir(const QString& dirPath) {
 
 WalletApplication::WalletApplication(int& _argc, char** _argv) : QApplication(_argc, _argv), m_lockFile(nullptr),
   m_systemTrayIcon(new QSystemTrayIcon(this)), m_applicationEventHandler(new ApplicationEventHandler(this)),
-  m_optimizationManager(nullptr), m_blogReader(new BlogReader(this)), m_mainWindow(nullptr), m_splash(nullptr),
+  m_optimizationManager(nullptr), m_donationManager(nullptr), m_mainWindow(nullptr), m_splash(nullptr),
   m_logWatcher(nullptr), m_isAboutToQuit(false) {
-  setApplicationName("bytecoinwallet");
+  setApplicationName("karbowanecwallet");
   setApplicationVersion(Settings::instance().getVersion());
   setQuitOnLastWindowClosed(false);
   setStyle(QStyleFactory::create("fusion"));
@@ -140,9 +138,9 @@ bool WalletApplication::init() {
   makeDataDir();
   WalletLogger::init(Settings::instance().getDataDir(), Settings::instance().hasDebugOption(), this);
   WalletLogger::info(tr("[Application] Initializing..."));
-  m_lockFile = new QLockFile(Settings::instance().getDataDir().absoluteFilePath("bytecoinwallet.lock"));
+  m_lockFile = new QLockFile(Settings::instance().getDataDir().absoluteFilePath("karbowallet.lock"));
   QUrl paymentUrl = QUrl::fromUserInput(arguments().last());
-  if (paymentUrl.scheme() != BYTECOIN_URI_SCHEME_NAME) {
+  if (paymentUrl.scheme() != URI_SCHEME_NAME) {
     paymentUrl = QUrl();
   }
 
@@ -152,19 +150,16 @@ bool WalletApplication::init() {
   }
 #endif
   if (!m_lockFile->tryLock()) {
-    WalletLogger::warning(tr("[Application] Bytecoin wallet already running"));
+    WalletLogger::warning(tr("[Application] Karbo wallet already running"));
     if (!paymentUrl.isValid()) {
-      QMessageBox::warning(nullptr, QObject::tr("Fail"), "Bytecoin wallet already running");
+      QMessageBox::warning(nullptr, QObject::tr("Fail"), "Karbo wallet already running");
     }
 
     return false;
   }
 
   m_applicationEventHandler->init();
-  if (Settings::instance().isNewsEnabled()) {
-    m_blogReader->init();
-  }
-
+  
   SignalHandler::instance().init();
   QObject::connect(&SignalHandler::instance(), &SignalHandler::quitSignal, this, &WalletApplication::quit);
   if (!Settings::instance().isRunMinimizedEnabled()) {
@@ -198,11 +193,7 @@ void WalletApplication::dockClickHandler() {
 }
 
 void WalletApplication::settingsUpdated() {
-  if (Settings::instance().isNewsEnabled()) {
-    m_blogReader->init();
-  } else {
-    m_blogReader->deinit();
-  }
+  
 }
 
 void WalletApplication::loadFonts() {
@@ -262,9 +253,9 @@ bool WalletApplication::initCryptoNoteAdapter() {
       okButton->setText(QObject::tr("Ok"));
       dlg.addButton(okButton, QMessageBox::AcceptRole);
       dlg.setText(QObject::tr("The database is currently used by another application or service.\n"
-      "If you have bytecoind with non-default RPC port, you should terminate it and relaunch BytecoinWallet\n"
+      "If you have karbowanecd with non-default RPC port, you should terminate it and relaunch KarboWallet\n"
       "or\n"
-      "Set the Local deamon required port in BytecoinWallet Menu/Preferences/Connection settings."));
+      "Set the Local deamon required port in KarboWallet Menu/Preferences/Connection settings."));
       dlg.exec();
       return false;
     }
@@ -338,8 +329,7 @@ void WalletApplication::initUi() {
   AddressBookManager* addressBookManager = new AddressBookManager(m_cryptoNoteAdapter, this);
   m_addressBookManager = addressBookManager;
   m_donationManager = addressBookManager;
-  m_optimizationManager= new OptimizationManager(m_cryptoNoteAdapter, this);
-  m_miningManager = new MiningManager(m_cryptoNoteAdapter, m_donationManager, this);
+  m_optimizationManager = new OptimizationManager(m_cryptoNoteAdapter, this);
   if (m_splash != nullptr) {
     m_splash->showMessage(QObject::tr("Initializing GUI..."), Qt::AlignLeft | Qt::AlignBottom, Qt::white);
   }
@@ -350,7 +340,7 @@ void WalletApplication::initUi() {
   styleSheetFile.close();
   setStyleSheet(Settings::instance().getCurrentStyle().makeStyleSheet(styleSheet));
   m_mainWindow = new MainWindow(m_cryptoNoteAdapter, m_addressBookManager, m_donationManager, m_optimizationManager,
-    m_miningManager, m_applicationEventHandler, m_blogReader, styleSheet, nullptr);
+    m_applicationEventHandler, styleSheet, nullptr);
   connect(static_cast<MainWindow*>(m_mainWindow), &MainWindow::reinitCryptoNoteAdapterSignal,
     this, &WalletApplication::reinitCryptoNoteAdapter);
   if (m_splash != nullptr) {
@@ -418,9 +408,6 @@ void WalletApplication::trayActivated(QSystemTrayIcon::ActivationReason _reason)
 
 void WalletApplication::prepareToQuit() {
   WalletLogger::debug(tr("[Application] Prepare to quit..."));
-  if (Settings::instance().isNewsEnabled()) {
-    m_blogReader->deinit();
-  }
 
   Settings::instance().removeObserver(this);
   m_isAboutToQuit = true;

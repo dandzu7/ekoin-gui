@@ -2,21 +2,22 @@
 //
 // This file is part of Bytecoin.
 //
-// Bytecoin is free software: you can redistribute it and/or modify
+// Karbovanets is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// Bytecoin is distributed in the hope that it will be useful,
+// Karbovanets is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with Bytecoin.  If not, see <http://www.gnu.org/licenses/>.
+// along with Karbovanets.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <QFileDialog>
 #include <QMessageBox>
+#include <Common/Base58.h>
 
 #include "KeyDialog.h"
 #include "IWalletAdapter.h"
@@ -62,16 +63,22 @@ KeyDialog::KeyDialog(const QByteArray& _key, bool _isTracking, QWidget *_parent)
   , m_isExport(true)
   , m_key(_key) {
   m_ui->setupUi(this);
-  setWindowTitle(m_isTracking ? tr("Export tracking key") : tr("Export key"));
+
   m_ui->m_fileButton->setText(tr("Save to file"));
   m_ui->m_okButton->setText(tr("Close"));
   m_ui->m_keyEdit->setReadOnly(true);
-  m_ui->m_keyEdit->setPlainText(m_key.toHex().toUpper());
+
   if (m_isTracking) {
+    m_ui->m_keyEdit->setPlainText(m_key.toHex().toUpper());
     m_ui->m_descriptionLabel->setText(tr("Tracking key allows other people to see all incoming transactions of this wallet.\n"
       "It doesn't allow spending your funds."));
+  } else {
+    QString privateKeys = QString::fromStdString(Tools::Base58::encode_addr(Settings::instance().getAddressPrefix(),
+            std::string(m_key.constData(), m_key.length())));
+    m_ui->m_keyEdit->setPlainText(privateKeys);
   }
 
+  setWindowTitle(m_isTracking ? tr("Export tracking key") : tr("Export key"));
   m_ui->m_cancelButton->hide();
   setFixedHeight(195);
   setStyleSheet(Settings::instance().getCurrentStyle().makeStyleSheet(KEY_DIALOG_STYLE_SHEET_TEMPLATE));
@@ -98,6 +105,10 @@ KeyDialog::~KeyDialog() {
 
 QByteArray KeyDialog::getKey() const {
   return QByteArray::fromHex(m_ui->m_keyEdit->toPlainText().toLatin1());
+}
+
+QString KeyDialog::getKeyString() const {
+  return m_ui->m_keyEdit->toPlainText().toLatin1().trimmed();
 }
 
 void KeyDialog::saveKey() {
