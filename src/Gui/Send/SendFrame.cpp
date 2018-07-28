@@ -362,6 +362,7 @@ void SendFrame::clearAll() {
     m_ui->m_transfersLayout->removeWidget(transfer);
     transfer->disableSendAllButton(false);
     transfer->close();
+    transfer->deleteLater();
   }
 
   QApplication::processEvents();
