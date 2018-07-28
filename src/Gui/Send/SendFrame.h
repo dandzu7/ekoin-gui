@@ -115,6 +115,7 @@ private:
   Q_SLOT void generatePaymentIdClicked();
   Q_SLOT void insertPaymentIdReceived(const QString& _paymentId);
   Q_SLOT void enableManualFee(bool _enable);
+  Q_SLOT void sendAllClicked();
 
 Q_SIGNALS:
   void showTransactionsFrameSignal();

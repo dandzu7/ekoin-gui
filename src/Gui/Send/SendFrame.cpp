@@ -320,8 +320,11 @@ void SendFrame::addRecipientClicked() {
   m_transfers.first()->hideBorder();
   if (m_transfers.size() == 1) {
     newTransfer->disableRemoveButton(true);
-  } else{
+    newTransfer->disableSendAllButton(false);
+  } else {
     m_transfers[0]->disableRemoveButton(false);
+    m_transfers[0]->disableSendAllButton(true);
+    newTransfer->disableSendAllButton(true);
   }
 
   connect(newTransfer, &TransferFrame::amountStringChangedSignal, this, &SendFrame::amountStringChanged);
@@ -335,6 +338,7 @@ void SendFrame::addRecipientClicked() {
 
     if (m_transfers.size() == 1) {
       m_transfers[0]->disableRemoveButton(true);
+      m_transfers[0]->disableSendAllButton(false);
     }
 
     m_transfers.first()->hideBorder();
@@ -345,6 +349,7 @@ void SendFrame::addRecipientClicked() {
     m_ui->m_sendButton->setEnabled(readyToSend());
   });
   connect(newTransfer, &TransferFrame::insertPaymentIdSignal, this, &SendFrame::insertPaymentIdReceived);
+  connect(newTransfer, &TransferFrame::sendAllClickedSignal, this, &SendFrame::sendAllClicked);
 
   m_ui->m_sendScrollarea->widget()->adjustSize();
   m_ui->m_sendScrollarea->widget()->updateGeometry();
@@ -355,8 +360,8 @@ void SendFrame::addRecipientClicked() {
 void SendFrame::clearAll() {
   for (TransferFrame* transfer : m_transfers) {
     m_ui->m_transfersLayout->removeWidget(transfer);
+    transfer->disableSendAllButton(false);
     transfer->close();
-    transfer->deleteLater();
   }
 
   QApplication::processEvents();
@@ -635,6 +640,25 @@ void SendFrame::insertPaymentIdReceived(const QString& _paymentId) {
 
 void SendFrame::enableManualFee(bool _enable) {
   m_ui->m_feeSpin->setEnabled(_enable);
+}
+
+void SendFrame::sendAllClicked() {
+  qreal amount;
+  const quint64 actualBalance = m_walletStateModel->index(0, 0).data(WalletStateModel::ROLE_ACTUAL_BALANCE).value<quint64>();
+  remote_node_fee = 0;
+  if (on_remote && !remote_node_fee_address.isEmpty()) {
+       remote_node_fee = static_cast<qint64>(actualBalance * 0.0025); // fee is 0.25%
+    if (remote_node_fee < m_cryptoNoteAdapter->getMinimalFee()) {
+        remote_node_fee = m_cryptoNoteAdapter->getMinimalFee();
+    }
+    if (remote_node_fee > 1000000000000ULL) {
+        remote_node_fee = 1000000000000ULL;
+    }
+  }
+  quint64 priorityFee = m_cryptoNoteAdapter->getMinimalFee() * m_ui->m_prioritySlider->value();
+  qreal total_fee = QLocale(QLocale::English).toDouble(m_cryptoNoteAdapter->formatAmount(priorityFee + remote_node_fee));
+  amount = QLocale(QLocale::English).toDouble(m_cryptoNoteAdapter->formatAmount(actualBalance)) - total_fee;
+  m_transfers[0]->setAmount(amount);
 }
 
 }
