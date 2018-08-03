@@ -271,9 +271,9 @@ void InProcessNodeWorker::initImpl() {
   }
 
   m_dispatcher->yield();
-  m_node->shutdown();
   m_nodeServer->deinit();
-  //m_core->save();
+  m_core->deinit();
+  m_node->shutdown();
   m_dispatcher->yield();
   Q_EMIT deinitCompletedSignal();
 }
