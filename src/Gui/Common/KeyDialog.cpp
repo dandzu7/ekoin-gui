@@ -211,6 +211,7 @@ void KeyDialog::keyChanged() {
       return;
     }
     accountKeys = convertByteArrayToAccountKeys(_array);
+ }
     m_isTracking = (std::memcmp(&accountKeys.spendKeys.secretKey, &CryptoNote::NULL_SECRET_KEY, sizeof(Crypto::SecretKey)) == 0);
 
     setWindowTitle(m_isTracking ? tr("Import tracking key") : tr("Import key"));
@@ -221,7 +222,7 @@ void KeyDialog::keyChanged() {
     } else {
       m_ui->m_descriptionLabel->clear();
     }
-  }
+
 }
 
 }
