@@ -142,6 +142,8 @@ public:
         QObject::connect(m_okButton, SIGNAL(clicked()), KeyDialog, SLOT(accept()));
         QObject::connect(m_cancelButton, SIGNAL(clicked()), KeyDialog, SLOT(reject()));
         QObject::connect(m_keyEdit, SIGNAL(textChanged()), KeyDialog, SLOT(keyChanged()));
+        QObject::connect(m_spendKeyLineEdit, SIGNAL(editingFinished()), KeyDialog, SLOT(keysChanged()));
+        QObject::connect(m_viewKeyLineEdit, SIGNAL(editingFinished()), KeyDialog, SLOT(keysChanged()));
 
         QMetaObject::connectSlotsByName(KeyDialog);
     } // setupUi

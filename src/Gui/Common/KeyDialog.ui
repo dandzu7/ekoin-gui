@@ -271,9 +271,42 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>m_spendKeyLineEdit</sender>
+   <signal>editingFinished()</signal>
+   <receiver>KeyDialog</receiver>
+   <slot>keysChanged()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>337</x>
+     <y>121</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>292</x>
+     <y>124</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>m_viewKeyLineEdit</sender>
+   <signal>editingFinished()</signal>
+   <receiver>KeyDialog</receiver>
+   <slot>keysChanged()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>337</x>
+     <y>147</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>292</x>
+     <y>124</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>fileClicked()</slot>
   <slot>keyChanged()</slot>
+  <slot>keysChanged()</slot>
  </slots>
 </ui>
