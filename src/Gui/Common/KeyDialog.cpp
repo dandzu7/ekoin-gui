@@ -226,8 +226,8 @@ void KeyDialog::keyChanged() {
 }
 
 void KeyDialog::keysChanged() {
-  std::string private_spend_key_string = m_ui->m_spendKeyLineEdit->text().toLatin1().trimmed();
-  std::string private_view_key_string = m_ui->m_viewKeyLineEdit->text().toLatin1().trimmed();
+  std::string private_spend_key_string = m_ui->m_spendKeyLineEdit->text().toLatin1().trimmed().toStdString();
+  std::string private_view_key_string = m_ui->m_viewKeyLineEdit->text().toLatin1().trimmed().toStdString();
   if (!private_spend_key_string.empty() && !private_view_key_string.empty()) {
     m_ui->m_keyEdit->clear();
     m_keys.clear();
