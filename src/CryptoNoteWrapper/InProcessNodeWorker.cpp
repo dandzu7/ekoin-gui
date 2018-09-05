@@ -294,6 +294,7 @@ INodeAdapter::InitStatus InProcessNodeWorker::initCore() {
     CryptoNote::Checkpoints checkpoints(m_loggerManager);
 
     if (!Settings::instance().isTestnet()) {
+      checkpoints.load_checkpoints_from_dns();
       for (const CryptoNote::CheckpointData& checkpoint : CryptoNote::CHECKPOINTS) {
         checkpoints.add_checkpoint(checkpoint.height, checkpoint.blockId);
       }
