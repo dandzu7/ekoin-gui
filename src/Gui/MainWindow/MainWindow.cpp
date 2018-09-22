@@ -44,6 +44,7 @@
 #include "Gui/Common/QRCodeDialog.h"
 #include "Gui/Common/MnemonicDialog.h"
 #include "Gui/Common/OpenUriDialog.h"
+#include "Gui/Common/SignMessageDialog.h"
 #include "ICryptoNoteAdapter.h"
 #include "INodeAdapter.h"
 #include "IWalletAdapter.h"
@@ -773,6 +774,22 @@ void MainWindow::encryptWallet() {
     // create new encrypted backup
     walletAdapter->exportWallet(fileName,false,CryptoNote::WalletSaveLevel::SAVE_KEYS_ONLY,true);
   }
+}
+
+void MainWindow::signMessage() {
+  AccountKeys accountKeys = m_cryptoNoteAdapter->getNodeAdapter()->getWalletAdapter()->getAccountKeys(0);
+  QString address = m_cryptoNoteAdapter->getNodeAdapter()->getWalletAdapter()->getAddress(0);
+  SignMessageDialog dlg(accountKeys, address, this);
+  dlg.sign();
+  dlg.exec();
+}
+
+void MainWindow::verifyMessage() {
+  AccountKeys accountKeys = m_cryptoNoteAdapter->getNodeAdapter()->getWalletAdapter()->getAccountKeys(0);
+  QString address = m_cryptoNoteAdapter->getNodeAdapter()->getWalletAdapter()->getAddress(0);
+  SignMessageDialog dlg(accountKeys, address, this);
+  dlg.verify();
+  dlg.exec();
 }
 
 void MainWindow::exportKey() {
