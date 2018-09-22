@@ -406,6 +406,8 @@ void MainWindow::setOpenedState() {
   m_ui->m_changePasswordAction->setEnabled(walletAdapter->isEncrypted());
   m_ui->m_openPaymentRequestAction->setEnabled(true);
   m_ui->m_createPaymentRequestAction->setEnabled(true);
+  m_ui->m_signMessageAction->setEnabled(true);
+  m_ui->m_verifyMessageAction->setEnabled(true);
 
   m_ui->m_noWalletFrame->hide();
   m_ui->m_overviewFrame->show();
@@ -433,6 +435,8 @@ void MainWindow::setClosedState() {
   m_ui->m_showSeedAction->setEnabled(false);
   m_ui->m_openPaymentRequestAction->setEnabled(false);
   m_ui->m_createPaymentRequestAction->setEnabled(false);
+  m_ui->m_signMessageAction->setEnabled(false);
+  m_ui->m_verifyMessageAction->setEnabled(false);
 
   m_ui->m_overviewFrame->hide();
   m_ui->m_sendFrame->hide();
