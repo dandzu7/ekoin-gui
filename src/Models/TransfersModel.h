@@ -31,11 +31,11 @@ class TransfersModel : public QAbstractItemModel {
 
 public:
   enum Columns {
-    COLUMN_ADDRESS = 0, COLUMN_AMOUNT
+    COLUMN_ADDRESS = 0, COLUMN_AMOUNT, COLUMN_PROOF
   };
 
   enum Roles {
-    ROLE_ADDRESS = Qt::UserRole, ROLE_AMOUNT, ROLE_TYPE, ROLE_ICON, ROLE_IS_DONATION_TRANSFER
+    ROLE_ADDRESS = Qt::UserRole, ROLE_AMOUNT, ROLE_TYPE, ROLE_ICON, ROLE_IS_DONATION_TRANSFER, ROLE_PROOF
   };
 
   TransfersModel(ICryptoNoteAdapter* _cryptoNoteAdapter, const QModelIndex& _transactionIndex, QObject* _parent);
@@ -54,6 +54,8 @@ private:
   ICryptoNoteAdapter* m_cryptoNoteAdapter;
   QPersistentModelIndex m_transactionIndex;
   const int m_columnCount;
+
+  QString getTxProof(const QModelIndex& _index) const;
 
   QVariant getDisplayRole(const QModelIndex& _index) const;
   QVariant getDecorationRole(const QModelIndex& _index) const;

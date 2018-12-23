@@ -19,6 +19,8 @@
 #include <QMetaEnum>
 #include <QPixmap>
 
+#include "Common/StringTools.h"
+#include "crypto/crypto.h"
 #include "TransfersModel.h"
 #include "ICryptoNoteAdapter.h"
 #include "INodeAdapter.h"
@@ -52,6 +54,22 @@ TransfersModel::TransfersModel(ICryptoNoteAdapter* _cryptoNoteAdapter, const QMo
 TransfersModel::~TransfersModel() {
 }
 
+QString TransfersModel::getTxProof(const QModelIndex& _index) const {
+  CryptoNote::WalletTransfer transfer = m_transactionIndex.data(TransactionsModel::ROLE_TRANSFERS).
+          value<QList<CryptoNote::WalletTransfer>>()[_index.row()];
+  QString proof = "";
+  Crypto::Hash txHash;
+  Common::podFromHex(m_transactionIndex.data(TransactionsModel::ROLE_HASH).toByteArray().toHex().toStdString(), txHash);
+  CryptoNote::AccountPublicAddress addr = m_cryptoNoteAdapter->parseAccountAddress(QString::fromStdString(transfer.address));
+  Crypto::SecretKey txKey = m_cryptoNoteAdapter->getNodeAdapter()->getWalletAdapter()->getTransactionSecretKey(static_cast<size_t>(m_transactionIndex.row()));
+  if (transfer.amount > 0) {
+    if (txKey != CryptoNote::NULL_SECRET_KEY) {
+      proof = m_cryptoNoteAdapter->getTxProof(txHash, addr, txKey);
+    }
+  }
+  return proof;
+}
+
 Qt::ItemFlags TransfersModel::flags(const QModelIndex& _index) const {
   return Qt::ItemIsEnabled | Qt::ItemNeverHasChildren | Qt::ItemIsSelectable;
 }
@@ -71,6 +89,8 @@ QVariant TransfersModel::headerData(int _section, Qt::Orientation _orientation, 
       return tr("Address");
     case COLUMN_AMOUNT:
       return tr("Amount");
+    case COLUMN_PROOF:
+      return tr("Proof");
     }
   } else if (_role == Qt::TextAlignmentRole) {
     return static_cast<int>(Qt::AlignVCenter | Qt::AlignRight);
@@ -118,6 +138,9 @@ QVariant TransfersModel::getDisplayRole(const QModelIndex& _index) const {
     return _index.data(ROLE_ADDRESS);
   case COLUMN_AMOUNT:
     return m_cryptoNoteAdapter->formatAmountToShort(_index.data(ROLE_AMOUNT).toLongLong());
+  case COLUMN_PROOF:
+    return getTxProof(_index);
+
   default:
     break;
   }
@@ -136,7 +159,7 @@ QVariant TransfersModel::getDecorationRole(const QModelIndex& _index) const {
 }
 
 QVariant TransfersModel::getToolTipRole(const QModelIndex& _index) const {
-  if (_index.column() == COLUMN_ADDRESS) {
+  if (_index.column() == COLUMN_ADDRESS || _index.column() == COLUMN_PROOF) {
     return tr("Click to copy");
   }
 

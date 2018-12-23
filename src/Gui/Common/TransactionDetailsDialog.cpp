@@ -143,12 +143,15 @@ TransactionDetailsDialog::TransactionDetailsDialog(ICryptoNoteAdapter* _cryptoNo
   m_ui->m_transfersView->setHeader(new TransfersHeaderView(this));
   m_ui->m_transfersView->setItemDelegateForColumn(TransfersModel::COLUMN_ADDRESS, new CopyColumnDelegate(this));
   m_ui->m_transfersView->setItemDelegateForColumn(TransfersModel::COLUMN_AMOUNT, new TransactionsAmountDelegate(false, this));
+  m_ui->m_transfersView->setItemDelegateForColumn(TransfersModel::COLUMN_PROOF, new CopyColumnDelegate(this));
   m_ui->m_transfersView->header()->setSectionResizeMode(TransfersModel::COLUMN_ADDRESS, QHeaderView::Stretch);
   m_ui->m_transfersView->header()->setSectionResizeMode(TransfersModel::COLUMN_AMOUNT, QHeaderView::ResizeToContents);
-  m_ui->m_transfersView->setCopyableColumnSet(QSet<int>() << TransfersModel::COLUMN_ADDRESS);
+  m_ui->m_transfersView->header()->setSectionResizeMode(TransfersModel::COLUMN_PROOF, QHeaderView::Fixed);
+  m_ui->m_transfersView->header()->resizeSection(TransfersModel::COLUMN_PROOF, 110);
+  m_ui->m_transfersView->setCopyableColumnSet(QSet<int>() << TransfersModel::COLUMN_ADDRESS << TransfersModel::COLUMN_PROOF);
   QString viewStyleSheet = m_ui->m_transfersView->styleSheet();
   for (int i = 0; i < transfersModel->rowCount(); ++i) {
-    QModelIndex index = transfersModel->index(i, TransfersModel::COLUMN_ADDRESS);
+    QModelIndex index = transfersModel->index(i, TransfersModel::COLUMN_PROOF);
     m_ui->m_transfersView->openPersistentEditor(index);
   }
 
