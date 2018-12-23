@@ -1,6 +1,7 @@
 // Copyright (c) 2015-2017, The Bytecoin developers
+// Copyright (c) 2017-2018, The Karbo developers
 //
-// This file is part of Bytecoin.
+// This file is part of Karbo.
 //
 // Karbovanets is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
@@ -145,6 +146,7 @@ private:
   Q_SLOT void openPaymentRequestClicked();
   Q_SLOT void signMessage();
   Q_SLOT void verifyMessage();
+  Q_SLOT void getBalanceProof();
 
 Q_SIGNALS:
   void reinitCryptoNoteAdapterSignal();

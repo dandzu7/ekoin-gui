@@ -1,6 +1,7 @@
 // Copyright (c) 2015-2017, The Bytecoin developers
+// Copyright (c) 2017-2018, The Karbo developers
 //
-// This file is part of Bytecoin.
+// This file is part of Karbo.
 //
 // Karbovanets is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
@@ -45,6 +46,7 @@
 #include "Gui/Common/MnemonicDialog.h"
 #include "Gui/Common/OpenUriDialog.h"
 #include "Gui/Common/SignMessageDialog.h"
+#include "Gui/Common/BalanceProofDialog.h"
 #include "ICryptoNoteAdapter.h"
 #include "INodeAdapter.h"
 #include "IWalletAdapter.h"
@@ -408,6 +410,7 @@ void MainWindow::setOpenedState() {
   m_ui->m_createPaymentRequestAction->setEnabled(true);
   m_ui->m_signMessageAction->setEnabled(true);
   m_ui->m_verifyMessageAction->setEnabled(true);
+  m_ui->m_getBalanceProofAction->setEnabled(true);
 
   m_ui->m_noWalletFrame->hide();
   m_ui->m_overviewFrame->show();
@@ -437,6 +440,7 @@ void MainWindow::setClosedState() {
   m_ui->m_createPaymentRequestAction->setEnabled(false);
   m_ui->m_signMessageAction->setEnabled(false);
   m_ui->m_verifyMessageAction->setEnabled(false);
+  m_ui->m_getBalanceProofAction->setEnabled(false);
 
   m_ui->m_overviewFrame->hide();
   m_ui->m_sendFrame->hide();
@@ -793,6 +797,11 @@ void MainWindow::verifyMessage() {
   QString address = m_cryptoNoteAdapter->getNodeAdapter()->getWalletAdapter()->getAddress(0);
   SignMessageDialog dlg(accountKeys, address, this);
   dlg.verify();
+  dlg.exec();
+}
+
+void MainWindow::getBalanceProof() {
+  BalanceProofDialog dlg(m_cryptoNoteAdapter, this);
   dlg.exec();
 }
 
