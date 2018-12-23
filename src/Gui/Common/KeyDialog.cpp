@@ -242,7 +242,7 @@ void KeyDialog::keysChanged() {
       keys.spendSecretKey = *(struct Crypto::SecretKey *) &private_spend_key_hash;
       keys.viewSecretKey = *(struct Crypto::SecretKey *) &private_view_key_hash;
       Crypto::secret_key_to_public_key(keys.spendSecretKey, keys.address.spendPublicKey);
-      Crypto::secret_key_to_public_key( keys.viewSecretKey, keys.address.viewPublicKey);
+      Crypto::secret_key_to_public_key(keys.viewSecretKey, keys.address.viewPublicKey);
       m_keys = QString::fromStdString(Tools::Base58::encode_addr(Settings::instance().getAddressPrefix(),
         std::string(reinterpret_cast<char*>(&keys), sizeof(keys))));
       m_ui->m_keyEdit->setText(m_keys);
