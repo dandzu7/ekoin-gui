@@ -38,7 +38,7 @@ void CopyColumnDelegate::paint(QPainter* _painter, const QStyleOptionViewItem& _
     _painter->setFont(opt.font);
     QFontMetrics fm(opt.font);
     QRect textRect = opt.widget->style()->subElementRect(QStyle::SE_ItemViewItemText, &opt, opt.widget);
-    textRect.setRight(textRect.right() - 20);
+    textRect.setRight(textRect.right());
     QString elidedText = fm.elidedText(opt.text, opt.textElideMode, textRect.width());
     opt.widget->style()->drawPrimitive(QStyle::PE_PanelItemViewItem, &opt, _painter, opt.widget);
     _painter->setPen(opt.palette.color(QPalette::Text));
@@ -72,7 +72,7 @@ void CopyColumnDelegate::updateEditorGeometry(QWidget* _editor, const QStyleOpti
   QRect editorRect(_editor->rect());
   QRect textRect = _option.widget->style()->subElementRect(QStyle::SE_ItemViewItemText, &_option, _option.widget);
   editorRect.moveCenter(_option.rect.center());
-  editorRect.moveLeft(textRect.right() - 10);
+  editorRect.moveLeft(textRect.right());
   _editor->setGeometry(editorRect);
 }
 

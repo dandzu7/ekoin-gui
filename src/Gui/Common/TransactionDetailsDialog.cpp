@@ -117,8 +117,11 @@ const char TRANSACTION_DETAILS_DIALOG_STYLE_SHEET_TEMPLATE[] =
   "WalletGui--TransactionDetailsDialog #m_transfersTab {"
     "background-color: #ffffff;"
     "border: none;"
-  "}";
+  "}"
 
+  "WalletGui--TransactionDetailsDialog #m_transfersView::item {"
+    "padding-right: 20px;"
+  "}";
 }
 
 TransactionDetailsDialog::TransactionDetailsDialog(ICryptoNoteAdapter* _cryptoNoteAdapter, QAbstractItemModel* _transactionsModel,
@@ -147,7 +150,7 @@ TransactionDetailsDialog::TransactionDetailsDialog(ICryptoNoteAdapter* _cryptoNo
   m_ui->m_transfersView->header()->setSectionResizeMode(TransfersModel::COLUMN_ADDRESS, QHeaderView::Stretch);
   m_ui->m_transfersView->header()->setSectionResizeMode(TransfersModel::COLUMN_AMOUNT, QHeaderView::ResizeToContents);
   m_ui->m_transfersView->header()->setSectionResizeMode(TransfersModel::COLUMN_PROOF, QHeaderView::Fixed);
-  m_ui->m_transfersView->header()->resizeSection(TransfersModel::COLUMN_PROOF, 110);
+  m_ui->m_transfersView->header()->resizeSection(TransfersModel::COLUMN_PROOF, 150);
   m_ui->m_transfersView->setCopyableColumnSet(QSet<int>() << TransfersModel::COLUMN_ADDRESS << TransfersModel::COLUMN_PROOF);
   QString viewStyleSheet = m_ui->m_transfersView->styleSheet();
   for (int i = 0; i < transfersModel->rowCount(); ++i) {

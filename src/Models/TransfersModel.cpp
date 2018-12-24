@@ -91,7 +91,12 @@ QVariant TransfersModel::headerData(int _section, Qt::Orientation _orientation, 
       return tr("Proof");
     }
   } else if (_role == Qt::TextAlignmentRole) {
-    return static_cast<int>(Qt::AlignVCenter | Qt::AlignRight);
+    switch (_section) {
+    case COLUMN_PROOF:
+      return static_cast<int>(Qt::AlignVCenter | Qt::AlignLeft);
+    default:
+      return static_cast<int>(Qt::AlignVCenter | Qt::AlignRight);
+    }
   }
 
   return QVariant();
