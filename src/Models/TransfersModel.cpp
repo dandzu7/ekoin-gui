@@ -60,12 +60,10 @@ QString TransfersModel::getTxProof(const QModelIndex& _index) const {
   QString proof = "";
   Crypto::Hash txHash;
   Common::podFromHex(m_transactionIndex.data(TransactionsModel::ROLE_HASH).toByteArray().toHex().toStdString(), txHash);
-  CryptoNote::AccountPublicAddress addr = m_cryptoNoteAdapter->parseAccountAddress(QString::fromStdString(transfer.address));
   Crypto::SecretKey txKey = m_cryptoNoteAdapter->getNodeAdapter()->getWalletAdapter()->getTransactionSecretKey(static_cast<size_t>(m_transactionIndex.row()));
-  if (transfer.amount > 0) {
-    if (txKey != CryptoNote::NULL_SECRET_KEY) {
-      proof = m_cryptoNoteAdapter->getTxProof(txHash, addr, txKey);
-    }
+  CryptoNote::AccountPublicAddress addr;
+  if (m_cryptoNoteAdapter->parseAccountAddressString(QString::fromStdString(transfer.address), addr) && transfer.amount > 0 && txKey != CryptoNote::NULL_SECRET_KEY) {
+    proof = m_cryptoNoteAdapter->getTxProof(txHash, addr, txKey);
   }
   return proof;
 }
