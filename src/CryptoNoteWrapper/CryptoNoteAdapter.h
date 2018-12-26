@@ -64,8 +64,7 @@ public:
   virtual QString extractPaymentIdFromExtra(const std::string& _extra) const override;
   virtual void addObserver(ICryptoNoteAdapterObserver* _observer) override;
   virtual void removeObserver(ICryptoNoteAdapterObserver* _observer) override;
-
-  bool parseAccountAddressString(QString& _address, CryptoNote::AccountPublicAddress& _internalAddress);
+  virtual bool parseAccountAddressString(QString &_address, CryptoNote::AccountPublicAddress &_internalAddress) override;
 
   // INodeAdapterObserver
   Q_SLOT virtual void initCompleted(int _status) override;
