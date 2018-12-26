@@ -84,6 +84,7 @@
         <file alias="miner">icons/miner.png</file>
         <file alias="send">icons/send.png</file>
         <file alias="remote">icons/cloud.png</file>
+        <file alias="stamp">icons/stamp.png</file>
     </qresource>
     <qresource prefix="/images">
         <file alias="splash">images/splash.png</file>

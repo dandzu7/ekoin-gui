@@ -18,6 +18,7 @@
 
 #include <QMetaEnum>
 #include <QPixmap>
+#include <QPainter>
 
 #include "Common/StringTools.h"
 #include "crypto/crypto.h"
@@ -52,20 +53,6 @@ TransfersModel::TransfersModel(ICryptoNoteAdapter* _cryptoNoteAdapter, const QMo
 }
 
 TransfersModel::~TransfersModel() {
-}
-
-QString TransfersModel::getTxProof(const QModelIndex& _index) const {
-  CryptoNote::WalletTransfer transfer = m_transactionIndex.data(TransactionsModel::ROLE_TRANSFERS).
-          value<QList<CryptoNote::WalletTransfer>>()[_index.row()];
-  QString proof = "";
-  Crypto::Hash txHash;
-  Common::podFromHex(m_transactionIndex.data(TransactionsModel::ROLE_HASH).toByteArray().toHex().toStdString(), txHash);
-  Crypto::SecretKey txKey = m_cryptoNoteAdapter->getNodeAdapter()->getWalletAdapter()->getTransactionSecretKey(static_cast<size_t>(m_transactionIndex.row()));
-  CryptoNote::AccountPublicAddress addr;
-  if (m_cryptoNoteAdapter->parseAccountAddressString(QString::fromStdString(transfer.address), addr) && transfer.amount > 0 && txKey != CryptoNote::NULL_SECRET_KEY) {
-    proof = m_cryptoNoteAdapter->getTxProof(txHash, addr, txKey);
-  }
-  return proof;
 }
 
 Qt::ItemFlags TransfersModel::flags(const QModelIndex& _index) const {
@@ -140,9 +127,7 @@ QVariant TransfersModel::getDisplayRole(const QModelIndex& _index) const {
   case COLUMN_ADDRESS:
     return _index.data(ROLE_ADDRESS);
   case COLUMN_AMOUNT:
-    return m_cryptoNoteAdapter->formatAmountToShort(_index.data(ROLE_AMOUNT).toLongLong());
-  case COLUMN_PROOF:
-    return getTxProof(_index);
+    return m_cryptoNoteAdapter->formatAmount(_index.data(ROLE_AMOUNT).toLongLong());
 
   default:
     break;
@@ -156,6 +141,19 @@ QVariant TransfersModel::getDecorationRole(const QModelIndex& _index) const {
     CryptoNote::WalletTransfer transfer = m_transactionIndex.data(TransactionsModel::ROLE_TRANSFERS).
       value<QList<CryptoNote::WalletTransfer>>()[_index.row()];
     return getTransferPixmap(transfer);
+  } else if (_index.column() == COLUMN_PROOF) {
+    QPixmap icon(":icons/stamp");
+    QPixmap pixmap(81, 40);
+    pixmap.fill(Qt::transparent);
+    QPainter painter(&pixmap);
+    CryptoNote::WalletTransfer transfer = m_transactionIndex.data(TransactionsModel::ROLE_TRANSFERS).
+      value<QList<CryptoNote::WalletTransfer>>()[_index.row()];
+    Crypto::SecretKey txKey = m_cryptoNoteAdapter->getNodeAdapter()->getWalletAdapter()->getTransactionSecretKey(static_cast<size_t>(m_transactionIndex.row()));
+    CryptoNote::AccountPublicAddress addr;
+    if (m_cryptoNoteAdapter->parseAccountAddressString(QString::fromStdString(transfer.address), addr) && transfer.amount > 0 && txKey != CryptoNote::NULL_SECRET_KEY) {
+      painter.drawPixmap(7,12, icon.width(), icon.height(), icon);
+    }
+    return pixmap;
   }
 
   return QVariant();
@@ -182,8 +180,6 @@ QVariant TransfersModel::getUserRole(const QModelIndex& _index, int _role) const
   case ROLE_ICON:
     return getTransferPixmap(transfer);
   case ROLE_IS_DONATION_TRANSFER: {
-    CryptoNote::WalletTransfer transfer = m_transactionIndex.data(TransactionsModel::ROLE_TRANSFERS).
-      value<QList<CryptoNote::WalletTransfer>>()[_index.row()];
     if (transfer.type == CryptoNote::WalletTransferType::DONATION) {
       return true;
     }
