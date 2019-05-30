@@ -33,6 +33,7 @@
 #include "BlockChainExplorerAdapter.h"
 #include "WalletGreenAdapter.h"
 
+#include "CheckpointsData.h"
 #include "CryptoNoteCore/Core.h"
 #include "CryptoNoteCore/ICore.h"
 #include "CryptoNoteCore/CryptoNoteTools.h"
