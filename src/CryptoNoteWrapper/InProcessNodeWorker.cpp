@@ -1,5 +1,5 @@
 // Copyright (c) 2015-2017, The Bytecoin developers
-// Copyright (c) 2017-2018, The Karbo developers
+// Copyright (c) 2017-2019, The Karbo developers
 //
 // This file is part of Karbo.
 //
@@ -302,7 +302,7 @@ INodeAdapter::InitStatus InProcessNodeWorker::initCore() {
       }
     }
 
-    m_core.reset(new CryptoNote::core(m_currency, nullptr, m_loggerManager, true));
+    m_core.reset(new CryptoNote::Core(m_currency, nullptr, m_loggerManager, *m_dispatcher, true));
 
     if (!Settings::instance().isTestnet()) {
       m_core->set_checkpoints(std::move(checkpoints));

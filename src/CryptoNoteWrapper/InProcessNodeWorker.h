@@ -1,5 +1,5 @@
 // Copyright (c) 2015-2017, The Bytecoin developers
-// Copyright (c) 2017-2018, The Karbo developers
+// Copyright (c) 2017-2019, The Karbo developers
 //
 // This file is part of Karbo.
 //
@@ -79,7 +79,7 @@ public:
 private:
   const CryptoNote::Currency& m_currency;
   Logging::ILogger& m_loggerManager;
-  QScopedPointer<CryptoNote::core> m_core;
+  QScopedPointer<CryptoNote::Core> m_core;
   Logging::ILogger& m_walletLogger;
   QScopedPointer<System::Dispatcher> m_dispatcher;
   QScopedPointer<CryptoNote::CryptoNoteProtocolHandler> m_protocolHandler;
