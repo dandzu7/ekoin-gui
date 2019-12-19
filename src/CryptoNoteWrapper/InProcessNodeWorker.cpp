@@ -296,19 +296,18 @@ INodeAdapter::InitStatus InProcessNodeWorker::initCore() {
     CryptoNote::Checkpoints checkpoints(m_loggerManager);
 
     if (!Settings::instance().isTestnet()) {
-      checkpoints.load_checkpoints_from_dns();
       for (const CryptoNote::CheckpointData& checkpoint : CryptoNote::CHECKPOINTS) {
         checkpoints.add_checkpoint(checkpoint.height, checkpoint.blockId);
       }
+      checkpoints.load_checkpoints_from_dns();
     }
 
     m_core.reset(new CryptoNote::Core(m_currency, nullptr, m_loggerManager, *m_dispatcher, true));
+    m_protocolHandler.reset(new CryptoNote::CryptoNoteProtocolHandler(m_currency, *m_dispatcher, *m_core, nullptr, m_loggerManager));
 
     if (!Settings::instance().isTestnet()) {
       m_core->set_checkpoints(std::move(checkpoints));
     }
-
-    m_protocolHandler.reset(new CryptoNote::CryptoNoteProtocolHandler(m_currency, *m_dispatcher, *m_core, nullptr, m_loggerManager));
 
     m_core->set_cryptonote_protocol(m_protocolHandler.data());
 
