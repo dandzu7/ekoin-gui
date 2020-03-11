@@ -96,6 +96,7 @@ file(GLOB_RECURSE CRYPTONOTE_SOURCES
   cryptonote/src/crypto/crypto-ops-data.c
   cryptonote/src/crypto/crypto-ops.c
   cryptonote/src/crypto/crypto.cpp
+  cryptonote/src/crypto/crypto-util.c
   cryptonote/src/crypto/groestl.c
   cryptonote/src/crypto/hash-extra-blake.c
   cryptonote/src/crypto/hash-extra-groestl.c
