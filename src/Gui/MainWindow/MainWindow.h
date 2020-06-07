@@ -147,6 +147,7 @@ private:
   Q_SLOT void signMessage();
   Q_SLOT void verifyMessage();
   Q_SLOT void getBalanceProof();
+  Q_SLOT void setBlockchainExplorerEnabled(bool _enable);
 
 Q_SIGNALS:
   void reinitCryptoNoteAdapterSignal();

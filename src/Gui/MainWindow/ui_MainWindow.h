@@ -1,13 +1,13 @@
 /********************************************************************************
-** Form generated from reading UI file 'MainWindow.ui'
+** Form generated from reading UI file 'MainWindowsKWoxx.ui'
 **
 ** Created by: Qt User Interface Compiler version 5.10.1
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
 
-#ifndef UI_MAINWINDOW_H
-#define UI_MAINWINDOW_H
+#ifndef MAINWINDOWSKWOXX_H
+#define MAINWINDOWSKWOXX_H
 
 #include <QtCore/QVariant>
 #include <QtWidgets/QAction>
@@ -73,6 +73,7 @@ public:
     QAction *m_signMessageAction;
     QAction *m_verifyMessageAction;
     QAction *m_getBalanceProofAction;
+    QAction *m_enableBlockchainExplorerAction;
     QWidget *centralwidget;
     QVBoxLayout *verticalLayout_2;
     QFrame *m_headerFrame;
@@ -227,6 +228,9 @@ public:
         m_verifyMessageAction->setObjectName(QStringLiteral("m_verifyMessageAction"));
         m_getBalanceProofAction = new QAction(MainWindow);
         m_getBalanceProofAction->setObjectName(QStringLiteral("m_getBalanceProofAction"));
+        m_enableBlockchainExplorerAction = new QAction(MainWindow);
+        m_enableBlockchainExplorerAction->setObjectName(QStringLiteral("m_enableBlockchainExplorerAction"));
+        m_enableBlockchainExplorerAction->setCheckable(true);
         centralwidget = new QWidget(MainWindow);
         centralwidget->setObjectName(QStringLiteral("centralwidget"));
         verticalLayout_2 = new QVBoxLayout(centralwidget);
@@ -638,6 +642,7 @@ public:
         menuSettings->addAction(m_autostartAction);
         menuSettings->addAction(m_minimizeToTrayAction);
         menuSettings->addAction(m_closeToTrayAction);
+        menuSettings->addAction(m_enableBlockchainExplorerAction);
         menuSettings->addAction(m_manualFeeAction);
         menuSettings->addSeparator();
         menuSettings->addAction(m_preferencesAction);
@@ -702,6 +707,7 @@ public:
         QObject::connect(m_signMessageAction, SIGNAL(triggered()), MainWindow, SLOT(signMessage()));
         QObject::connect(m_verifyMessageAction, SIGNAL(triggered()), MainWindow, SLOT(verifyMessage()));
         QObject::connect(m_getBalanceProofAction, SIGNAL(triggered()), MainWindow, SLOT(getBalanceProof()));
+        QObject::connect(m_enableBlockchainExplorerAction, SIGNAL(triggered(bool)), MainWindow, SLOT(setBlockchainExplorerEnabled(bool)));
 
         QMetaObject::connectSlotsByName(MainWindow);
     } // setupUi
@@ -754,6 +760,10 @@ public:
         m_signMessageAction->setText(QApplication::translate("MainWindow", "Sign message", nullptr));
         m_verifyMessageAction->setText(QApplication::translate("MainWindow", "Verify message", nullptr));
         m_getBalanceProofAction->setText(QApplication::translate("MainWindow", "Proof of balance", nullptr));
+        m_enableBlockchainExplorerAction->setText(QApplication::translate("MainWindow", "Enable blockchain explorer", nullptr));
+#ifndef QT_NO_TOOLTIP
+        m_enableBlockchainExplorerAction->setToolTip(QApplication::translate("MainWindow", "Enable blockchain explorer (after wallet is synced as it has detrimental effect on sync speed)", nullptr));
+#endif // QT_NO_TOOLTIP
         m_noWalletLabel->setText(QApplication::translate("MainWindow", "No active wallet", nullptr));
         m_walletLabel->setText(QApplication::translate("MainWindow", "Your wallet:", nullptr));
 #ifndef QT_NO_TOOLTIP
@@ -795,4 +805,4 @@ namespace Ui {
 
 QT_END_NAMESPACE
 
-#endif // UI_MAINWINDOW_H
+#endif // MAINWINDOWSKWOXX_H

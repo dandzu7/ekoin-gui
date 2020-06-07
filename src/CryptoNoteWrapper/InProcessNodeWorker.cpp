@@ -26,6 +26,8 @@
 
 #include <functional>
 
+#include "INode.h"
+#include "BlockchainExplorer/BlockchainExplorer.h"
 #include "InProcessNodeWorker.h"
 #include "GuardExecutor.h"
 #include "Settings/Settings.h"
@@ -241,7 +243,7 @@ IWalletAdapter* InProcessNodeWorker::getWalletAdapter() {
 }
 
 void InProcessNodeWorker::peerCountUpdated(size_t _count) {
-  //WalletLogger::info(tr("[Embedded node] Event: Peer count updated: %1").arg(_count));
+  WalletLogger::debug(tr("[Embedded node] Event: Peer count updated: %1").arg(_count));
   Q_EMIT peerCountUpdatedSignal(_count);
 }
 
@@ -285,9 +287,11 @@ void InProcessNodeWorker::initImpl() {
     return;
   }
 
-  BlockChainExplorerAdapter* blockchainExplorerAdapter = new BlockChainExplorerAdapter(*m_node, m_loggerManager, nullptr);
-  blockchainExplorerAdapter->moveToThread(qApp->thread());
-  m_blockchainExplorerAdapter = blockchainExplorerAdapter;
+  if (Settings::instance().isBlockchainExplorerEnabled()) {
+    BlockChainExplorerAdapter* blockchainExplorerAdapter = new BlockChainExplorerAdapter(*m_node, m_loggerManager, nullptr);
+    blockchainExplorerAdapter->moveToThread(qApp->thread());
+    m_blockchainExplorerAdapter = blockchainExplorerAdapter;
+  }
 
   Q_EMIT initCompletedSignal(INIT_SUCCESS);
   m_nodeServer->run();

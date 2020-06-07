@@ -60,6 +60,7 @@ const char OPTION_MINIMIZE_TO_TRAY[] = "minimizeToTray";
 const char OPTION_CLOSE_TO_TRAY[] = "closeToTray";
 const char OPTION_PRIVACY_PARAMS[] = "privacyParams";
 const char OPTION_PRIVACY_NEWS_ENABLED[] = "newsEnabled";
+const char OPTION_BLOCK_EXPLORER_ENABLED[] = "blockExplorerEnabled";
 
 const char DEFAULT_WALLET_FILE_NAME[] = "karbo.wallet";
 const quint64 DEFAULT_OPTIMIZATION_PERIOD = 1000 * 60 * 30; // 30 minutes
@@ -364,6 +365,15 @@ bool Settings::isNewsEnabled() const {
 
   QJsonObject privacyParams = m_settings.value(OPTION_PRIVACY_PARAMS).toObject();
   return privacyParams.contains(OPTION_PRIVACY_NEWS_ENABLED) ? privacyParams.value(OPTION_PRIVACY_NEWS_ENABLED).toBool() : false;
+}
+
+bool Settings::isBlockchainExplorerEnabled() const {
+  QReadLocker lock(&m_lock);
+  if (!m_settings.contains(OPTION_BLOCK_EXPLORER_ENABLED)) {
+    return false;
+  }
+
+  return m_settings.contains(OPTION_BLOCK_EXPLORER_ENABLED) ? m_settings.value(OPTION_BLOCK_EXPLORER_ENABLED).toBool() : false;
 }
 
 quint16 Settings::getLocalRpcPort() const {
@@ -820,6 +830,20 @@ void Settings::setNewsEnabled(bool _enable) {
 
     privacyObject.insert(OPTION_PRIVACY_NEWS_ENABLED, _enable);
     m_settings.insert(OPTION_PRIVACY_PARAMS, privacyObject);
+    saveSettings();
+  }
+
+  notifyObservers();
+}
+
+void Settings::setBlockchainExplorerEnabled(bool _enable) {
+  if (_enable == isBlockchainExplorerEnabled()) {
+    return;
+  }
+
+  {
+    QWriteLocker lock(&m_lock);
+    m_settings.insert(OPTION_BLOCK_EXPLORER_ENABLED, _enable);
     saveSettings();
   }
 

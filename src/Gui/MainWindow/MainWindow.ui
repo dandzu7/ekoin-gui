@@ -959,6 +959,7 @@
     <addaction name="m_autostartAction"/>
     <addaction name="m_minimizeToTrayAction"/>
     <addaction name="m_closeToTrayAction"/>
+    <addaction name="m_enableBlockchainExplorerAction"/>
     <addaction name="m_manualFeeAction"/>
     <addaction name="separator"/>
     <addaction name="m_preferencesAction"/>
@@ -1209,6 +1210,17 @@
   <action name="m_getBalanceProofAction">
    <property name="text">
     <string>Proof of balance</string>
+   </property>
+  </action>
+  <action name="m_enableBlockchainExplorerAction">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Enable blockchain explorer</string>
+   </property>
+   <property name="toolTip">
+    <string>Enable blockchain explorer (after wallet is synced as it has detrimental effect on sync speed)</string>
    </property>
   </action>
  </widget>
@@ -1877,6 +1889,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>m_enableBlockchainExplorerAction</sender>
+   <signal>triggered(bool)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>setBlockchainExplorerEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>549</x>
+     <y>349</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>createWallet()</slot>
@@ -1906,6 +1934,7 @@
   <slot>signMessage()</slot>
   <slot>verifyMessage()</slot>
   <slot>getBalanceProof()</slot>
+  <slot>setBlockchainExplorerEnabled(bool)</slot>
  </slots>
  <buttongroups>
   <buttongroup name="m_toolButtonGroup">

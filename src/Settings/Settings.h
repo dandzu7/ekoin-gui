@@ -87,6 +87,8 @@ public:
   bool isMinimizeToTrayEnabled() const;
   bool isCloseToTrayEnabled() const;
 
+  bool isBlockchainExplorerEnabled() const;
+
   void init();
   void restoreDefaultNodeList();
   void setDefaultRemoteNode();
@@ -112,6 +114,7 @@ public:
   void setNewsEnabled(bool _enable);
   void setMinimizeToTrayEnabled(bool _enable);
   void setCloseToTrayEnabled(bool _enable);
+  void setBlockchainExplorerEnabled(bool _enable);
 
   void addObserver(ISettingsObserver* _settingsObserver);
   void removeObserver(ISettingsObserver* _settingsObserver);

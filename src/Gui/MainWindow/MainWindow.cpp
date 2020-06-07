@@ -182,6 +182,8 @@ MainWindow::MainWindow(ICryptoNoteAdapter* _cryptoNoteAdapter, IAddressBookManag
   m_walletStateMapper->addMapping(m_ui->m_balanceLabel, WalletStateModel::COLUMN_TOTAL_SHORT_BALANCE, "text");
   m_walletStateMapper->setCurrentIndex(0);
 
+  m_ui->m_enableBlockchainExplorerAction->setChecked(Settings::instance().isBlockchainExplorerEnabled());
+
   setClosedState();
 
  /*!
@@ -425,6 +427,9 @@ void MainWindow::setOpenedState() {
 
   m_ui->m_overviewButton->setChecked(true);
   m_ui->m_blockExplorerButton->setEnabled(m_cryptoNoteAdapter->getNodeAdapter()->getBlockChainExplorerAdapter() != nullptr);
+
+  m_ui->m_enableBlockchainExplorerAction->setEnabled(Settings::instance().getConnectionMethod() == ConnectionMethod::EMBEDDED ||
+                                                     m_cryptoNoteAdapter->getNodeAdapter()->getNodeType() == NodeType::IN_PROCESS);
   m_ui->m_receiveButton->setEnabled(true);
 }
 
@@ -997,6 +1002,12 @@ void MainWindow::setMinimizeToTrayEnabled(bool _enable) {
 
 void MainWindow::setCloseToTrayEnabled(bool _enable) {
   Settings::instance().setCloseToTrayEnabled(_enable);
+}
+
+void MainWindow::setBlockchainExplorerEnabled(bool _enable) {
+  Settings::instance().setBlockchainExplorerEnabled(_enable);
+  QMessageBox::information(nullptr, tr("Blockchain explorer enabling"),
+                        tr("Changes will take effect after wallet restart."), QMessageBox::Ok);
 }
 
 void MainWindow::showPreferences() {
