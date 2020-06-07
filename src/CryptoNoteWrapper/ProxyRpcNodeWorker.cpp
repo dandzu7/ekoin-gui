@@ -60,6 +60,11 @@ NodeType ProxyRpcNodeWorker::getNodeType() const {
   return NodeType::RPC;
 }
 
+QString ProxyRpcNodeWorker::getNodeVersion() const {
+  Q_ASSERT(!m_node.isNull());
+  return QString::fromStdString(m_node->getNodeVersion());
+}
+
 quintptr ProxyRpcNodeWorker::getPeerCount() const {
   Q_ASSERT(!m_node.isNull());
   return m_node->getPeerCount();
@@ -80,9 +85,29 @@ CryptoNote::BlockHeaderInfo ProxyRpcNodeWorker::getLastLocalBlockInfo() const {
   return m_node->getLastLocalBlockHeaderInfo();
 }
 
+QString ProxyRpcNodeWorker::getNodeHost() const {
+  Q_ASSERT(!m_node.isNull());
+  return m_nodeHost;
+}
+
+quint16 ProxyRpcNodeWorker::getNodePort() const {
+  Q_ASSERT(!m_node.isNull());
+  return m_nodePort;
+}
+
 quint64 ProxyRpcNodeWorker::getMinimalFee() const {
   Q_ASSERT(!m_node.isNull());
   return m_node->getMinimalFee();
+}
+
+quint64 ProxyRpcNodeWorker::getNodeFee() const {
+  Q_ASSERT(!m_node.isNull());
+  return m_node->feeAmount();
+}
+
+QString ProxyRpcNodeWorker::getNodeFeeAddress() const {
+  Q_ASSERT(!m_node.isNull());
+  return QString::fromStdString(m_node->feeAddress());
 }
 
 void ProxyRpcNodeWorker::addObserver(INodeAdapterObserver* _observer) {
@@ -95,7 +120,6 @@ void ProxyRpcNodeWorker::addObserver(INodeAdapterObserver* _observer) {
   m_observerConnections[_observer] << connect(this, SIGNAL(lastKnownBlockHeightUpdatedSignal(quint32)), observer, SLOT(lastKnownBlockHeightUpdated(quint32)), Qt::QueuedConnection);
   m_observerConnections[_observer] << connect(this, SIGNAL(connectionStatusUpdatedSignal(bool)), observer, SLOT(connectionStatusUpdated(bool)), Qt::QueuedConnection);
   WalletLogger::info(tr("[Application] observer"));
-
 }
 
 void ProxyRpcNodeWorker::removeObserver(INodeAdapterObserver* _observer) {

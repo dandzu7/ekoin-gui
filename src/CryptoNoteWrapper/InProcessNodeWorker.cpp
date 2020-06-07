@@ -33,7 +33,7 @@
 #include "BlockChainExplorerAdapter.h"
 #include "WalletGreenAdapter.h"
 
-#include "CheckpointsData.h"
+#include "Checkpoints/CheckpointsData.h"
 #include "CryptoNoteCore/Core.h"
 #include "CryptoNoteCore/ICore.h"
 #include "CryptoNoteCore/CryptoNoteTools.h"
@@ -127,6 +127,11 @@ NodeType InProcessNodeWorker::getNodeType() const {
   return NodeType::IN_PROCESS;
 }
 
+QString InProcessNodeWorker::getNodeVersion() const {
+  Q_ASSERT(!m_node.isNull());
+  return QString::fromStdString(m_node->getNodeVersion());
+}
+
 quintptr InProcessNodeWorker::getPeerCount() const {
   Q_ASSERT(!m_node.isNull());
   try {
@@ -171,6 +176,16 @@ CryptoNote::BlockHeaderInfo InProcessNodeWorker::getLastLocalBlockInfo() const {
   return CryptoNote::BlockHeaderInfo();
 }
 
+QString InProcessNodeWorker::getNodeHost() const {
+  Q_ASSERT(!m_node.isNull());
+  return "";
+}
+
+quint16 InProcessNodeWorker::getNodePort() const {
+  Q_ASSERT(!m_node.isNull());
+  return 0;
+}
+
 quint64 InProcessNodeWorker::getMinimalFee() const {
   Q_ASSERT(!m_node.isNull());
   try {
@@ -180,6 +195,16 @@ quint64 InProcessNodeWorker::getMinimalFee() const {
   }
 
   return m_currency.minimumFee();
+}
+
+quint64 InProcessNodeWorker::getNodeFee() const {
+  Q_ASSERT(!m_node.isNull());
+  return m_node->feeAmount();
+}
+
+QString InProcessNodeWorker::getNodeFeeAddress() const {
+  Q_ASSERT(!m_node.isNull());
+  return QString::fromStdString(m_node->feeAddress());
 }
 
 void InProcessNodeWorker::addObserver(INodeAdapterObserver* _observer) {

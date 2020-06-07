@@ -65,7 +65,6 @@ public:
   virtual void addObserver(ICryptoNoteAdapterObserver* _observer) override;
   virtual void removeObserver(ICryptoNoteAdapterObserver* _observer) override;
   virtual bool parseAccountAddressString(QString &_address, CryptoNote::AccountPublicAddress &_internalAddress) override;
-  QString getTxProof(Crypto::Hash& txid, CryptoNote::AccountPublicAddress& address, Crypto::SecretKey& tx_key) override;
 
   // INodeAdapterObserver
   Q_SLOT virtual void initCompleted(int _status) override;

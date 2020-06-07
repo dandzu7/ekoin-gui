@@ -74,6 +74,11 @@ NodeType CommonNodeAdapter::getNodeType() const {
   return m_worker->getNodeType();
 }
 
+QString CommonNodeAdapter::getNodeVersion() const {
+  Q_ASSERT(m_worker != nullptr);
+  return m_worker->getNodeVersion();
+}
+
 quintptr CommonNodeAdapter::getPeerCount() const {
   Q_ASSERT(m_worker != nullptr);
   return m_worker->getPeerCount();
@@ -94,9 +99,29 @@ CryptoNote::BlockHeaderInfo CommonNodeAdapter::getLastLocalBlockInfo() const {
   return m_worker->getLastLocalBlockInfo();
 }
 
+QString CommonNodeAdapter::getNodeHost() const {
+  Q_ASSERT(m_worker != nullptr);
+  return m_worker->getNodeHost();
+}
+
+quint16 CommonNodeAdapter::getNodePort() const {
+  Q_ASSERT(m_worker != nullptr);
+  return m_worker->getNodePort();
+}
+
 quint64 CommonNodeAdapter::getMinimalFee() const {
   Q_ASSERT(m_worker != nullptr);
   return m_worker->getMinimalFee();
+}
+
+quint64 CommonNodeAdapter::getNodeFee() const {
+  Q_ASSERT(m_worker != nullptr);
+  return m_worker->getNodeFee();
+}
+
+QString CommonNodeAdapter::getNodeFeeAddress() const {
+  Q_ASSERT(m_worker != nullptr);
+  return m_worker->getNodeFeeAddress();
 }
 
 void CommonNodeAdapter::addObserver(INodeAdapterObserver* _observer) {
