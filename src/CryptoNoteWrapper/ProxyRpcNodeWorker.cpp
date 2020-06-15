@@ -1,5 +1,5 @@
 // Copyright (c) 2015-2017, The Bytecoin developers
-// Copyright (c) 2017-2018, The Karbo developers
+// Copyright (c) 2017-2020, The Karbo developers
 //
 // This file is part of Karbo.
 //
@@ -18,12 +18,13 @@
 
 #include <QCoreApplication>
 #include <QDateTime>
+#include <QTimer>
 
 #include "ProxyRpcNodeWorker.h"
 #include "WalletLogger/WalletLogger.h"
 #include "BlockChainExplorerAdapter.h"
 #include "WalletGreenAdapter.h"
-
+#include "Settings/Settings.h"
 #include "NodeRpcProxy/NodeRpcProxy.h"
 
 namespace WalletGui {
@@ -136,10 +137,7 @@ void ProxyRpcNodeWorker::removeObserver(INodeAdapterObserver* _observer) {
 
 IBlockChainExplorerAdapter* ProxyRpcNodeWorker::getBlockChainExplorerAdapter() {
   Q_ASSERT(!m_node.isNull());
-  return nullptr;
   return m_blockchainExplorerAdapter;
-  BlockChainExplorerAdapter* blockchainExplorerAdapter = new BlockChainExplorerAdapter(*m_node, m_loggerManager, nullptr);
-  return blockchainExplorerAdapter;
 }
 
 IWalletAdapter* ProxyRpcNodeWorker::getWalletAdapter() {
@@ -149,7 +147,7 @@ IWalletAdapter* ProxyRpcNodeWorker::getWalletAdapter() {
 }
 
 void ProxyRpcNodeWorker::peerCountUpdated(size_t _count) {
-  //WalletLogger::info(tr("[RPC node] Event: Peer count updated: %1").arg(_count));
+  WalletLogger::debug(tr("[RPC node] Event: Peer count updated: %1").arg(_count));
   Q_EMIT peerCountUpdatedSignal(_count);
 }
 
@@ -170,24 +168,37 @@ void ProxyRpcNodeWorker::connectionStatusUpdated(bool _connected) {
 
 void ProxyRpcNodeWorker::initImpl() {
   Q_ASSERT(m_node.isNull());
-  m_node.reset(new CryptoNote::NodeRpcProxy(m_nodeHost.toStdString(), m_nodePort));
+
+  QEventLoop waitLoop;
+  connect(this, &ProxyRpcNodeWorker::initCompletedSignal, &waitLoop, &QEventLoop::exit, Qt::QueuedConnection);
+  std::error_code initResult;
+  m_node.reset(new CryptoNote::NodeRpcProxy(m_nodeHost.toStdString(), m_nodePort, m_loggerManager));
   m_node->addObserver(static_cast<CryptoNote::INodeObserver*>(this));
   m_node->addObserver(static_cast<CryptoNote::INodeRpcProxyObserver*>(this));
   WalletLogger::debug(tr("[RPC node] NodeRpcProxy initializing..."));
-  m_node->init([this](std::error_code _errorCode) {
+  m_node->init([this, &initResult](std::error_code _errorCode) {
     Q_ASSERT(_errorCode.value() == 0);
+    initResult = _errorCode;
     if (_errorCode.value() == 0) {
+      if (m_blockchainExplorerAdapter == nullptr && Settings::instance().isBlockchainExplorerEnabled() && !m_node.isNull()) {
+        WalletLogger::info(tr("[RPC node] Creating blockchain explorer..."));
+        BlockChainExplorerAdapter* blockchainExplorerAdapter = new BlockChainExplorerAdapter(*m_node, m_loggerManager, nullptr);
+        blockchainExplorerAdapter->moveToThread(qApp->thread());
+        m_blockchainExplorerAdapter = blockchainExplorerAdapter;
+      }
       Q_EMIT initCompletedSignal(INodeAdapter::INIT_SUCCESS);
     } else {
       WalletLogger::critical(tr("[RPC node] NodeRpcProxy init error: %1").arg(_errorCode.message().data()));
     }
-
-    BlockChainExplorerAdapter* blockchainExplorerAdapter = new BlockChainExplorerAdapter(*m_node, m_loggerManager, nullptr);
-      blockchainExplorerAdapter->moveToThread(qApp->thread());
-      m_blockchainExplorerAdapter = blockchainExplorerAdapter;
-
     WalletLogger::debug(tr("[RPC node] NodeRpcProxy init result: %1").arg(_errorCode.value()));
   });
+  WalletLogger::info(tr("[RPC node] Waiting..."));
+  waitLoop.exec();
+  if (initResult) {
+    WalletLogger::critical(tr("[RPC node] NodeRpcProxy init failed..."));
+  } else {
+
+  }
 }
 
 void ProxyRpcNodeWorker::deinitImpl() {

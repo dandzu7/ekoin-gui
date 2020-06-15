@@ -1,5 +1,5 @@
 // Copyright (c) 2015-2017, The Bytecoin developers
-// Copyright (c) 2017-2018, The Karbo developers
+// Copyright (c) 2017-2020, The Karbo developers
 //
 // This file is part of Karbo.
 //
@@ -26,7 +26,6 @@
 #include <QSemaphore>
 
 #include "IBlockChainExplorerAdapter.h"
-
 #include "BlockchainExplorer/BlockchainExplorer.h"
 
 namespace Logging {
@@ -34,7 +33,6 @@ namespace Logging {
 }
 
 namespace CryptoNote {
-  class IDataBase;
   class INode;
 }
 
