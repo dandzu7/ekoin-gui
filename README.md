@@ -1,5 +1,5 @@
 # Karbo-GUI
-Alt. wallet for Karbo
+Alt. GUI wallet for [Karbo](https://github.com/Karbovanets/karbo), working with database-driven backend (so-called [Karbo 2](https://github.com/Karbovanets/karbo)). For original memory/flat-file based Karbo core compatible version of this wallet go to https://github.com/seredat/karbo-gui/
 
 **1. Clone wallet sources**
 
