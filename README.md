@@ -1,5 +1,6 @@
 # Karbo-GUI
-Alt. GUI wallet for [Karbo](https://github.com/Karbovanets/karbo), working with database-driven backend (so-called [Karbo 2](https://github.com/Karbovanets/karbo)). For original memory/flat-file based Karbo core compatible version of this wallet go to https://github.com/seredat/karbo-gui/
+
+Alt. GUI wallet for [Karbo](https://github.com/Karbovanets/karbo), working with database-driven backend (so-called [Karbo 2](https://github.com/Karbovanets/karbo)). For the version of this wallet based on memory/flat-file-based Karbo core go to https://github.com/seredat/karbo-gui/
 
 **1. Clone wallet sources**
 
@@ -16,7 +17,7 @@ ln -s ../karbowanec cryptonote
 Alternative way is to create git submodule:
 
 ```
-git submodule add https://github.com/seredat/karbowanec.git cryptonote
+git submodule add https://github.com/Karbovanets/karbo.git cryptonote
 ```
 
 **3. Build**
