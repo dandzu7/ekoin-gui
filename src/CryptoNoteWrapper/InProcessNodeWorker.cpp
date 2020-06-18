@@ -295,6 +295,7 @@ void InProcessNodeWorker::initImpl() {
   }
 
   if (Settings::instance().isBlockchainExplorerEnabled()) {
+    m_blockchainExplorerAdapter = nullptr;
     BlockChainExplorerAdapter* blockchainExplorerAdapter = new BlockChainExplorerAdapter(*m_node, m_loggerManager, nullptr);
     blockchainExplorerAdapter->moveToThread(qApp->thread());
     m_blockchainExplorerAdapter = blockchainExplorerAdapter;
@@ -430,7 +431,6 @@ INodeAdapter::InitStatus InProcessNodeWorker::initInProcessNode() {
   if (initResult) {
     return INIT_NODE_FAILED;
   }
-
   try {
     m_node->addObserver(this);
   } catch (const std::exception& _error) {

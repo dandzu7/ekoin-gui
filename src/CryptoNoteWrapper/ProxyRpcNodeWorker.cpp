@@ -180,7 +180,9 @@ void ProxyRpcNodeWorker::initImpl() {
     Q_ASSERT(_errorCode.value() == 0);
     initResult = _errorCode;
     if (_errorCode.value() == 0) {
-      if (m_blockchainExplorerAdapter == nullptr && Settings::instance().isBlockchainExplorerEnabled() && !m_node.isNull()) {
+      if (m_blockchainExplorerAdapter == nullptr &&
+          Settings::instance().isBlockchainExplorerEnabled() && !m_node.isNull()/* &&
+          Settings::instance().getConnectionMethod() != ConnectionMethod::REMOTE*/) {
         WalletLogger::info(tr("[RPC node] Creating blockchain explorer..."));
         BlockChainExplorerAdapter* blockchainExplorerAdapter = new BlockChainExplorerAdapter(*m_node, m_loggerManager, nullptr);
         blockchainExplorerAdapter->moveToThread(qApp->thread());

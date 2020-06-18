@@ -18,6 +18,7 @@
 
 #include <QEventLoop>
 #include <QThread>
+#include <QTimer>
 #include <QTimerEvent>
 #include <QUrl>
 
@@ -276,15 +277,25 @@ void CryptoNoteAdapter::removeObserver(ICryptoNoteAdapterObserver* _observer) {
 }
 
 void CryptoNoteAdapter::initCompleted(int _status) {
-  WalletLogger::info(tr("[CryptoNote wrapper] Node init completed..."));
-  if (_status == INodeAdapter::INIT_SUCCESS && m_nodeAdapter->getBlockChainExplorerAdapter() != nullptr) {
-    WalletLogger::info(tr("[CryptoNote wrapper] Initializing blockchain explorer..."));
-    m_nodeAdapter->getBlockChainExplorerAdapter()->init();
+  try {
+    if (_status == INodeAdapter::INIT_SUCCESS && m_nodeAdapter->getBlockChainExplorerAdapter() != nullptr) {
+      WalletLogger::info(tr("[CryptoNote wrapper] Initializing blockchain explorer..."));
+      QTimer::singleShot(100, [this]() {
+          auto explInitStatus = m_nodeAdapter->getBlockChainExplorerAdapter()->init();
+          if (explInitStatus == IBlockChainExplorerAdapter::INIT_SUCCESS) {
+            WalletLogger::info(tr("[CryptoNote wrapper] Blockchain explorer initialized"));
+          } else {
+            WalletLogger::critical(tr("[CryptoNote wrapper] Blockchain explorer initialization error: %1").arg(static_cast<int>(explInitStatus)));
+          }
+      } );
+    }
+  } catch (const std::exception& _error) {
+    WalletLogger::critical(tr("[CryptoNote wrapper] Blockchain explorer creation error: %1").arg(_error.what()));
   }
 
   if (m_nodeAdapter->getNodeType() == NodeType::IN_PROCESS || m_autoConnectionTimerId == -1) {
     m_nodeAdapter->removeObserver(this);
-    Q_EMIT initCompletedSignal(_status);
+    QTimer::singleShot(100, [this, _status]() { Q_EMIT initCompletedSignal(_status); } );
   }
 }
 
@@ -400,7 +411,6 @@ void CryptoNoteAdapter::onLocalDaemonNotFound() {
   nodeAdapter->deleteLater();
   m_nodeAdapter = nullptr;
   initInProcessNode();
-  //initRemoteRpcNode();
 }
 
 void CryptoNoteAdapter::configureLogger(Logging::LoggerManager& _logger, const QString& _logFilePath, bool _debug) {
