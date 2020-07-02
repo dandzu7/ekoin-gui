@@ -195,8 +195,7 @@ set(WITH_TOOLS OFF CACHE BOOL "No tools")
 
 add_subdirectory(cryptonote/external/miniupnpc EXCLUDE_FROM_ALL)
 
-add_subdirectory(cryptonote/external/zstd EXCLUDE_FROM_ALL)
-set_property(TARGET zstd PROPERTY FOLDER "external")
+
 
 if (WIN32)
   if (NOT MSVC)
@@ -206,6 +205,9 @@ if (WIN32)
   set(STATIC ${MSVC} CACHE BOOL "Link libraries statically")
 
   add_definitions(/D_CRT_SECURE_NO_WARNINGS /D_WIN32_WINNT=0x0600 /DSTATICLIB)
+  
+  add_subdirectory(cryptonote/external/zstd EXCLUDE_FROM_ALL)
+  set_property(TARGET zstd PROPERTY FOLDER "external")
   
   add_subdirectory(cryptonote/external/rocksdb EXCLUDE_FROM_ALL)
   set_property(TARGET rocksdb PROPERTY FOLDER "external")
@@ -220,12 +222,40 @@ if (WIN32)
 
 elseif (UNIX)
 
-  execute_process(
-        COMMAND ${CMAKE_COMMAND} ${CMAKE_CURRENT_SOURCE_DIR}/cryptonote/external/rocksdb -DARCH=${ARCH} -DWITH_ZSTD=${WITH_ZSTD} -DWITH_GFLAGS=0 -DCMAKE_BUILD_TYPE=MinSizeRel -DWITH_TESTS=OFF -DWITH_TOOLS=OFF -DPORTABLE=ON -B${PROJECT_BINARY_DIR}/rocksdb
-      )
+  if (APPLE)
+    SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -mmacosx-version-min=10.12")
+    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mmacosx-version-min=10.12")
+    execute_process(
+        COMMAND ${CMAKE_COMMAND} ${CMAKE_CURRENT_SOURCE_DIR}/cryptonote/external/zstd -DCMAKE_C_FLAGS="-mmacosx-version-min=10.12" -DCMAKE_CXX_FLAGS="-mmacosx-version-min=10.12" -B${PROJECT_BINARY_DIR}/zstd
+    )
+  else()  
+    execute_process(
+        COMMAND ${CMAKE_COMMAND} ${CMAKE_CURRENT_SOURCE_DIR}/cryptonote/external/zstd -B${PROJECT_BINARY_DIR}/zstd
+    )
+  endif()
+  
+  add_custom_target(
+         zstd
+         COMMAND $(MAKE) zstd
+         WORKING_DIRECTORY ${PROJECT_BINARY_DIR}/zstd
+  )
+  add_library(zstdlib STATIC IMPORTED GLOBAL)
+  set_target_properties(zstdlib PROPERTIES IMPORTED_LOCATION ${PROJECT_BINARY_DIR}/zstd/libzstd.a)
+  add_dependencies(zstdlib zstd)
+  
+  if (APPLE)
+    execute_process(
+        COMMAND ${CMAKE_COMMAND} ${CMAKE_CURRENT_SOURCE_DIR}/cryptonote/external/rocksdb -DARCH=${ARCH} -DWITH_ZSTD=ON -DWITH_GFLAGS=0 -DCMAKE_BUILD_TYPE=MinSizeRel -DWITH_TESTS=OFF -DWITH_TOOLS=OFF -DPORTABLE=ON -DCMAKE_C_FLAGS="-mmacosx-version-min=10.12" -DCMAKE_CXX_FLAGS="-mmacosx-version-min=10.12" -B${PROJECT_BINARY_DIR}/rocksdb
+    )
+  else()  
+    execute_process(
+        COMMAND ${CMAKE_COMMAND} ${CMAKE_CURRENT_SOURCE_DIR}/cryptonote/external/rocksdb -DARCH=${ARCH} -DWITH_ZSTD=ON -DWITH_GFLAGS=0 -DCMAKE_BUILD_TYPE=MinSizeRel -DWITH_TESTS=OFF -DWITH_TOOLS=OFF -DPORTABLE=ON -B${PROJECT_BINARY_DIR}/rocksdb
+    )
+  endif()
   set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES "${PROJECT_BINARY_DIR}/rocksdb/librocksdb.a")
 
-  set_property(TARGET upnpc-static zstd PROPERTY FOLDER "external")
+  set_property(TARGET upnpc-static PROPERTY FOLDER "external")
+
   add_custom_target(
          rocksdb
          COMMAND $(MAKE) rocksdb
@@ -283,7 +313,7 @@ add_library(Mnemonics ${Mnemonics})
 set_target_properties(${CRYPTONOTE_LIB} PROPERTIES COMPILE_DEFINITIONS _GNU_SOURCE)
 
 if (APPLE OR ${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
-  target_link_libraries(${CRYPTONOTE_LIB} rocksdblib zstd ${Boost_LIBRARIES} ${Qt5DBus_LIBRARIES} -lresolv)
+  target_link_libraries(${CRYPTONOTE_LIB} rocksdblib zstdlib ${Boost_LIBRARIES} ${Qt5DBus_LIBRARIES} -lresolv)
 else ()
   target_link_libraries(${CRYPTONOTE_LIB} rocksdb zstd ${Boost_LIBRARIES} ${Qt5DBus_LIBRARIES})
 endif ()
