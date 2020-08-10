@@ -1,9 +1,12 @@
-name: Release
+name: Build check
 
 on:
   push:
-    tags:
-    - '*'
+    branches:
+      - '**'
+    tags-ignore:
+      - '*'            # We don't want this to run on release
+  pull_request:
 
 jobs:
   build-windows:
@@ -34,8 +37,8 @@ jobs:
           BOOST_ROOT: ${{ env.BOOST_ROOT }}
         run: |
           $build_folder = "build"
-          $krb_ver = "${{ github.ref }}" -replace '[refs/tags/]'
-          $release_name = "karbowallet-win64-$krb_ver"
+          $krb_ver = git describe --tags --abbrev=0
+          $release_name = "karbowallet-win64-${krb_ver}"
           set CMAKE_PREFIX_PATH="$($qt5_cmake)"
           $qt5_cmake = "${{ env.Qt5_Dir }}/lib/cmake" -replace '[/]', '\\'
           Remove-Item cryptonote -Recurse -ErrorAction Ignore
@@ -75,14 +78,11 @@ jobs:
           echo "::set-output name=asset_path::${asset_path}"
           echo "::set-output name=krb_ver::${krb_ver}"
 
-      - name: Create Release
-        uses: softprops/action-gh-release@v1
+      - name: Create Archive Artifact
+        uses: actions/upload-artifact@v1.0.0
         with:
-          files: ${{ steps.pack.outputs.asset_path }}
-          name: Karbo Spring Wallet ${{ steps.pack.outputs.krb_ver }}
-          body: |
-            **${{ steps.pack.outputs.release_name }}**
-            ${{ steps.pack.outputs.sha256 }}
+          path: ${{ steps.build.outputs.asset_path }}
+          name: ${{ steps.build.outputs.release_name }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -106,11 +106,20 @@ jobs:
           modules: 'qttools5'
           install-deps: 'true'
 
+      - name: Find Tag
+        id: tagger
+        uses: jimschubert/query-tag-action@v1
+        with:
+          include: 'v*'
+          exclude: '*-rc*'
+          commit-ish: 'HEAD~'
+          skip-unshallow: 'true'
+
       - name: Build
         id: build
         run: |
           build_folder="build/release"
-          krb_ver=$(echo ${{ github.ref }} | sed 's|refs/tags/||')
+          krb_ver="${{steps.tagger.outputs.tag}}"
           release_name="karbowallet-macOS-$krb_ver"
           app_name="KarboWallet.app"
           brew install gcc boost
@@ -131,14 +140,11 @@ jobs:
           echo "::set-output name=asset_path::${asset_path}"
           echo "::set-output name=krb_ver::${krb_ver}"
 
-      - name: Create Release
-        uses: softprops/action-gh-release@v1
+      - name: Create Artifact
+        uses: actions/upload-artifact@v1.0.0
         with:
-          files: ${{ steps.build.outputs.asset_path }}
-          name: Karbo Spring Wallet ${{ steps.build.outputs.krb_ver }}
-          body: |
-            **${{ steps.build.outputs.release_name }}**
-            ${{ steps.build.outputs.sha256 }}
+          path: ${{ steps.build.outputs.asset_path }}
+          name: ${{ steps.build.outputs.release_name }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -147,6 +153,17 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@master
+        with:
+          fetch-depth: 0
+
+      - name: Find Tag
+        id: tagger
+        uses: jimschubert/query-tag-action@v1
+        with:
+          include: 'v*'
+          exclude: '*-rc*'
+          commit-ish: 'HEAD~'
+          skip-unshallow: 'true'
 
       - name: Build
         id: build
@@ -154,7 +171,7 @@ jobs:
           sudo apt update -y
           sudo apt install -y qt5-default qttools5-dev qttools5-dev-tools libboost-all-dev
           build_folder="build/release"
-          krb_ver=$(echo "$GITHUB_REF" | sed 's|refs/tags/||')
+          krb_ver="${{ steps.build.outputs.krb_ver }}"
           release_name=karbowallet-ubuntu-20.04-"$krb_ver"
           app_name="karbowallet"
           rm -rf cryptonote
@@ -170,14 +187,12 @@ jobs:
           echo "::set-output name=release_name::${release_name}.tar.gz"
           echo "::set-output name=asset_path::${asset_path}"
           echo "::set-output name=krb_ver::${krb_ver}"
-      - name: Create Release
-        uses: softprops/action-gh-release@v1
+
+      - name: Create Artifact
+        uses: actions/upload-artifact@v1.0.0
         with:
-          files: ${{ steps.build.outputs.asset_path }}
-          name: Karbo Spring Wallet ${{ steps.build.outputs.krb_ver }}
-          body: |
-            **${{ steps.build.outputs.release_name }}**
-            ${{ steps.build.outputs.sha256 }}
+          path: ${{ steps.build.outputs.asset_path }}
+          name: ${{ steps.build.outputs.release_name }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -186,6 +201,17 @@ jobs:
     runs-on: ubuntu-18.04
     steps:
       - uses: actions/checkout@master
+        with:
+          fetch-depth: 0
+
+      - name: Find Tag
+        id: tagger
+        uses: jimschubert/query-tag-action@v1
+        with:
+          include: 'v*'
+          exclude: '*-rc*'
+          commit-ish: 'HEAD~'
+          skip-unshallow: 'true'
 
       - name: Build
         id: build
@@ -194,7 +220,7 @@ jobs:
           sudo apt update -y
           sudo apt install -y qt5-default qttools5-dev qttools5-dev-tools libboost1.62-all-dev
           build_folder="build/release"
-          krb_ver=$(echo "$GITHUB_REF" | sed 's|refs/tags/||')
+          krb_ver="${{ steps.build.outputs.krb_ver }}"
           release_name=karbowallet-ubuntu-18.04-"$krb_ver"
           app_name="karbowallet"
           rm -rf cryptonote
@@ -210,14 +236,11 @@ jobs:
           echo "::set-output name=release_name::${release_name}.tar.gz"
           echo "::set-output name=asset_path::${asset_path}"
           echo "::set-output name=krb_ver::${krb_ver}"
-      - name: Create Release
-        uses: softprops/action-gh-release@v1
+
+      - name: Create Artifact
+        uses: actions/upload-artifact@v1.0.0
         with:
-          files: ${{ steps.build.outputs.asset_path }}
-          name: Karbo Spring Wallet ${{ steps.build.outputs.krb_ver }}
-          body: |
-            **${{ steps.build.outputs.release_name }}**
-            ${{ steps.build.outputs.sha256 }}
+          path: ${{ steps.build.outputs.asset_path }}
+          name: ${{ steps.build.outputs.release_name }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
