@@ -222,7 +222,7 @@ jobs:
         run: |
           sudo apt-get purge '*boost*'
           sudo apt update -y
-          sudo apt install -y qt5-default qttools5-dev qttools5-dev-tools libboost1.62-all-dev
+          sudo apt install -y qt5-default qttools5-dev qttools5-dev-tools libboost-all-dev
           build_folder="build/release"
           krb_ver="${{ steps.build.outputs.krb_ver }}"
           release_name=karbowallet-ubuntu-18.04-"$krb_ver"
