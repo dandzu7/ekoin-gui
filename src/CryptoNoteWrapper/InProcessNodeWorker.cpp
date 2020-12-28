@@ -387,7 +387,8 @@ INodeAdapter::InitStatus InProcessNodeWorker::initCore() {
     m_core.reset(new CryptoNote::Core(m_currency, m_loggerManager, std::move(checkpoints), *m_dispatcher,
       std::unique_ptr<CryptoNote::IBlockchainCacheFactory>(new CryptoNote::DatabaseBlockchainCacheFactory(*m_database, m_loggerManager)),
       std::thread::hardware_concurrency()));
-    m_core->load();
+    CryptoNote::MinerConfig emptyMiner;
+    m_core->load(emptyMiner);
     m_protocolHandler.reset(new CryptoNote::CryptoNoteProtocolHandler(m_currency, *m_dispatcher, *m_core, nullptr, m_loggerManager));
     m_nodeServer.reset(new CryptoNote::NodeServer(*m_dispatcher, *m_protocolHandler, m_loggerManager));
 	m_node.reset(new CryptoNote::InProcessNode(*m_core, *m_protocolHandler, *m_dispatcher));
