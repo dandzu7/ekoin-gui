@@ -174,19 +174,14 @@ void ProxyRpcNodeWorker::initImpl() {
 
   QEventLoop waitLoop;
   connect(this, &ProxyRpcNodeWorker::initCompletedSignal, &waitLoop, &QEventLoop::exit, Qt::QueuedConnection);
-  std::error_code initResult;
 
   m_node.reset(new CryptoNote::NodeRpcProxy(m_nodeUrl.host().toStdString(), m_nodeUrl.port(), "/", m_nodeUrl.scheme().compare("https") == 0, m_loggerManager));
   m_node->addObserver(static_cast<CryptoNote::INodeObserver*>(this));
   m_node->addObserver(static_cast<CryptoNote::INodeRpcProxyObserver*>(this));
-  WalletLogger::debug(tr("[RPC node] NodeRpcProxy initializing..."));
-  m_node->init([this, &initResult](std::error_code _errorCode) {
-    Q_ASSERT(_errorCode.value() == 0);
-    initResult = _errorCode;
+  WalletLogger::info(tr("[RPC node] NodeRpcProxy initializing..."));
+  m_node->init([&](std::error_code _errorCode) {
     if (_errorCode.value() == 0) {
-      if (m_blockchainExplorerAdapter == nullptr &&
-          Settings::instance().isBlockchainExplorerEnabled() && !m_node.isNull()/* &&
-          Settings::instance().getConnectionMethod() != ConnectionMethod::REMOTE*/) {
+      if (m_blockchainExplorerAdapter == nullptr && Settings::instance().isBlockchainExplorerEnabled() && !m_node.isNull()) {
         WalletLogger::info(tr("[RPC node] Creating blockchain explorer..."));
         BlockChainExplorerAdapter* blockchainExplorerAdapter = new BlockChainExplorerAdapter(*m_node, m_loggerManager, nullptr);
         blockchainExplorerAdapter->moveToThread(qApp->thread());
@@ -196,15 +191,9 @@ void ProxyRpcNodeWorker::initImpl() {
     } else {
       WalletLogger::critical(tr("[RPC node] NodeRpcProxy init error: %1").arg(_errorCode.message().data()));
     }
-    WalletLogger::debug(tr("[RPC node] NodeRpcProxy init result: %1").arg(_errorCode.value()));
+    WalletLogger::info(tr("[RPC node] NodeRpcProxy init result: %1").arg(_errorCode.value()));
   });
-  WalletLogger::info(tr("[RPC node] Waiting..."));
   waitLoop.exec();
-  if (initResult) {
-    WalletLogger::critical(tr("[RPC node] NodeRpcProxy init failed..."));
-  } else {
-
-  }
 }
 
 void ProxyRpcNodeWorker::deinitImpl() {
