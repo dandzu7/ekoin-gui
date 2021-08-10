@@ -22,6 +22,7 @@
 #include <QMap>
 #include <QMetaObject>
 
+#include "IDataBase.h"
 #include "INodeAdapter.h"
 #include "INode.h"
 
@@ -36,6 +37,7 @@ namespace System {
 
 namespace CryptoNote {
   class RocksDBWrapper;
+  class LevelDBWrapper;
   class Currency;
   class Core;
   class CryptoNoteProtocolHandler;
@@ -83,7 +85,7 @@ public:
 private:
   const CryptoNote::Currency& m_currency;
   Logging::ILogger& m_loggerManager;
-  QScopedPointer<CryptoNote::RocksDBWrapper> m_database;
+  QScopedPointer<CryptoNote::IDataBase> m_database;
   QScopedPointer<CryptoNote::Core> m_core;
   Logging::ILogger& m_walletLogger;
   QScopedPointer<System::Dispatcher> m_dispatcher;

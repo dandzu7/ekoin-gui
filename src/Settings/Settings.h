@@ -51,6 +51,7 @@ public:
   bool isRunMinimizedEnabled() const;
   bool isStartOnLoginEnabled() const;
   bool isTestnet() const;
+  bool useLevelDB() const;
   quintptr getStyleCount() const;
   const Style& getStyle(quintptr _styleIndex) const;
   const Style& getCurrentStyle() const;

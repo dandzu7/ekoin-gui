@@ -183,6 +183,11 @@ bool Settings::hasHideMyPortOption() const {
   return m_cmdLineParser->hasHideMyPortOption();
 }
 
+bool Settings::useLevelDB() const {
+  Q_ASSERT(m_cmdLineParser != nullptr);
+  return m_cmdLineParser->hasLevelDBOption();
+}
+
 QString Settings::getP2pBindIp() const {
   QReadLocker lock(&m_lock);
   Q_ASSERT(m_cmdLineParser != nullptr);

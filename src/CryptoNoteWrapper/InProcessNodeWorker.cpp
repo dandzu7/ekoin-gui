@@ -44,6 +44,7 @@
 #include "CryptoNoteCore/DatabaseBlockchainCacheFactory.h"
 #include "CryptoNoteCore/DataBaseErrors.h"
 #include "CryptoNoteCore/RocksDBWrapper.h"
+#include "CryptoNoteCore/LevelDBWrapper.h"
 #include "CryptoNoteProtocol/CryptoNoteProtocolHandler.h"
 #include "Common/Util.h"
 #include "InProcessNode/InProcessNode.h"
@@ -344,11 +345,6 @@ INodeAdapter::InitStatus InProcessNodeWorker::initCore() {
     //TODO: move to settings?
     dbConfig.setConfigFolderDefaulted(true);
     dbConfig.setDataDir(std::string(Settings::instance().getDataDir().absolutePath().toLocal8Bit().data()));
-    dbConfig.setMaxOpenFiles(100);
-    dbConfig.setReadCacheSize(128 * 1024 * 1024);
-    dbConfig.setWriteBufferSize(128 * 1024 * 1024);
-    dbConfig.setTestnet(false);
-    dbConfig.setBackgroundThreadsCount(4);
 
     if (dbConfig.isConfigFolderDefaulted()) {
       if (!Tools::create_directories_if_necessary(dbConfig.getDataDir())) {
@@ -361,7 +357,13 @@ INodeAdapter::InitStatus InProcessNodeWorker::initCore() {
       }
     }
 
-    m_database.reset(new CryptoNote::RocksDBWrapper(m_loggerManager, dbConfig));
+    bool enableLevelDB = Settings::instance().useLevelDB();
+    if (enableLevelDB) {
+      m_database.reset(new CryptoNote::LevelDBWrapper(m_loggerManager, dbConfig));
+    } else {
+      m_database.reset(new CryptoNote::RocksDBWrapper(m_loggerManager, dbConfig));
+    }
+
     try {
       m_database->init();
       if (!CryptoNote::DatabaseBlockchainCache::checkDBSchemeVersion(*m_database, m_loggerManager))
