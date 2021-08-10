@@ -37,11 +37,13 @@ include_directories(${CMAKE_BINARY_DIR}
   src
   include
   cryptonote/external
+  cryptonote/external/leveldb/include
   cryptonote/external/rocksdb/include
   cryptonote/external/zstd/lib
   cryptonote/external/zstd/lib/common
   cryptonote/external/zstd/lib/compress
   cryptonote/external/zstd/lib/decompress
+  cryptonote/external/snappy
   cryptonote/include
   cryptonote/src
   libqrencode
@@ -52,7 +54,7 @@ find_package(Qt5Widgets REQUIRED)
 find_package(Qt5Network REQUIRED)
 find_package(Qt5DBus REQUIRED)
 
-include_directories(${Qt5DBus_INCLUDE_DIRS} cryptonote/external/rocksdb/include/ include src external "${CMAKE_CURRENT_BINARY_DIR}/version")
+include_directories(${Qt5DBus_INCLUDE_DIRS} include src external "${CMAKE_CURRENT_BINARY_DIR}/version")
 
 set(Boost_NO_BOOST_CMAKE ON)
 set(Boost_USE_STATIC_LIBS ON)
@@ -253,10 +255,10 @@ if (WIN32)
   add_definitions(/D_CRT_SECURE_NO_WARNINGS /D_WIN32_WINNT=0x0600 /DSTATICLIB)
   
   add_subdirectory(cryptonote/external/zstd EXCLUDE_FROM_ALL)
-  set_property(TARGET zstd PROPERTY FOLDER "external")
-  
   add_subdirectory(cryptonote/external/rocksdb EXCLUDE_FROM_ALL)
-  set_property(TARGET rocksdb PROPERTY FOLDER "external")
+  add_subdirectory(cryptonote/external/leveldb EXCLUDE_FROM_ALL)
+  add_subdirectory(cryptonote/external/snappy EXCLUDE_FROM_ALL)
+  set_property(TARGET rocksdb leveldb snappy zstd PROPERTY FOLDER "external")
   
   include_directories(cryptonote/src/Platform/msc)
 
@@ -275,10 +277,12 @@ elseif (UNIX)
     SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mmacosx-version-min=10.12")
     execute_process(
         COMMAND ${CMAKE_COMMAND} ${CMAKE_CURRENT_SOURCE_DIR}/cryptonote/external/zstd -DCMAKE_C_FLAGS="-mmacosx-version-min=10.12" -DCMAKE_CXX_FLAGS="-mmacosx-version-min=10.12" -B${PROJECT_BINARY_DIR}/zstd
+        COMMAND ${CMAKE_COMMAND} ${CMAKE_CURRENT_SOURCE_DIR}/cryptonote/external/snappy -DCMAKE_C_FLAGS="-mmacosx-version-min=10.12" -DCMAKE_CXX_FLAGS="-mmacosx-version-min=10.12" -B${PROJECT_BINARY_DIR}/snappy
     )
   else()  
     execute_process(
         COMMAND ${CMAKE_COMMAND} ${CMAKE_CURRENT_SOURCE_DIR}/cryptonote/external/zstd -B${PROJECT_BINARY_DIR}/zstd
+        COMMAND ${CMAKE_COMMAND} ${CMAKE_CURRENT_SOURCE_DIR}/cryptonote/external/snappy -B${PROJECT_BINARY_DIR}/snappy
     )
   endif()
   
@@ -290,14 +294,25 @@ elseif (UNIX)
   add_library(zstdlib STATIC IMPORTED GLOBAL)
   set_target_properties(zstdlib PROPERTIES IMPORTED_LOCATION ${PROJECT_BINARY_DIR}/zstd/libzstd.a)
   add_dependencies(zstdlib zstd)
+
+  add_custom_target(
+         snappy
+         COMMAND $(MAKE) snappy
+         WORKING_DIRECTORY ${PROJECT_BINARY_DIR}/snappy
+  )
+  add_library(snappylib STATIC IMPORTED GLOBAL)
+  set_target_properties(snappylib PROPERTIES IMPORTED_LOCATION ${PROJECT_BINARY_DIR}/snappy/libsnappy.a)
+  add_dependencies(snappylib snappy)
   
   if (APPLE)
     execute_process(
         COMMAND ${CMAKE_COMMAND} ${CMAKE_CURRENT_SOURCE_DIR}/cryptonote/external/rocksdb -DARCH=${ARCH} -DWITH_ZSTD=ON -DWITH_GFLAGS=0 -DCMAKE_BUILD_TYPE=MinSizeRel -DWITH_TESTS=OFF -DWITH_TOOLS=OFF -DPORTABLE=ON -DCMAKE_C_FLAGS="-mmacosx-version-min=10.12" -DCMAKE_CXX_FLAGS="-mmacosx-version-min=10.12" -B${PROJECT_BINARY_DIR}/rocksdb
+        COMMAND ${CMAKE_COMMAND} ${CMAKE_CURRENT_SOURCE_DIR}/cryptonote/external/leveldb -DARCH=${ARCH} -DCMAKE_BUILD_TYPE=MinSizeRel -DLEVELDB_BUILD_TESTS=OFF -DLEVELDB_BUILD_BENCHMARKS=OFF -DLEVELDB_INSTALL=OFF -DCMAKE_C_FLAGS="-mmacosx-version-min=10.12" -DCMAKE_CXX_FLAGS="-mmacosx-version-min=10.12" -B${PROJECT_BINARY_DIR}/leveldb
     )
-  else()  
+  else()
     execute_process(
         COMMAND ${CMAKE_COMMAND} ${CMAKE_CURRENT_SOURCE_DIR}/cryptonote/external/rocksdb -DARCH=${ARCH} -DWITH_ZSTD=ON -DWITH_GFLAGS=0 -DCMAKE_BUILD_TYPE=MinSizeRel -DWITH_TESTS=OFF -DWITH_TOOLS=OFF -DPORTABLE=ON -B${PROJECT_BINARY_DIR}/rocksdb
+        COMMAND ${CMAKE_COMMAND} ${CMAKE_CURRENT_SOURCE_DIR}/cryptonote/external/leveldb -DARCH=${ARCH} -DCMAKE_BUILD_TYPE=MinSizeRel -DLEVELDB_BUILD_TESTS=OFF -DLEVELDB_BUILD_BENCHMARKS=OFF -DLEVELDB_INSTALL=OFF -B${PROJECT_BINARY_DIR}/leveldb
     )
   endif()
   set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES "${PROJECT_BINARY_DIR}/rocksdb/librocksdb.a")
@@ -312,6 +327,15 @@ elseif (UNIX)
   add_library(rocksdblib STATIC IMPORTED GLOBAL)
   set_target_properties(rocksdblib PROPERTIES IMPORTED_LOCATION ${PROJECT_BINARY_DIR}/rocksdb/librocksdb.a)
   add_dependencies(rocksdblib rocksdb)
+
+  add_custom_target(
+         leveldb
+         COMMAND $(MAKE) leveldb
+         WORKING_DIRECTORY ${PROJECT_BINARY_DIR}/leveldb
+  )
+  add_library(leveldblib STATIC IMPORTED GLOBAL)
+  set_target_properties(leveldblib PROPERTIES IMPORTED_LOCATION ${PROJECT_BINARY_DIR}/leveldb/libleveldb.a)
+  add_dependencies(leveldblib leveldb)
 
   set(CRYPTONOTE_SOURCES ${CRYPTONOTE_SOURCES} cryptonote/external/miniupnpc/minissdpc.c)
 
@@ -361,9 +385,9 @@ add_library(Mnemonics ${Mnemonics})
 set_target_properties(${CRYPTONOTE_LIB} PROPERTIES COMPILE_DEFINITIONS _GNU_SOURCE)
 
 if (APPLE OR ${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
-  target_link_libraries(${CRYPTONOTE_LIB} rocksdblib zstdlib ${Boost_LIBRARIES} ${Qt5DBus_LIBRARIES} -lresolv)
+  target_link_libraries(${CRYPTONOTE_LIB} rocksdblib leveldblib snappylib zstdlib ${Boost_LIBRARIES}  ${Qt5DBus_LIBRARIES} -lresolv)
 else ()
-  target_link_libraries(${CRYPTONOTE_LIB} rocksdb zstd ${Boost_LIBRARIES} ${Qt5DBus_LIBRARIES})
+  target_link_libraries(${CRYPTONOTE_LIB} rocksdb leveldb snappy zstd ${Boost_LIBRARIES} ${Qt5DBus_LIBRARIES})
 endif ()
 set_target_properties(Mnemonics PROPERTIES COMPILE_DEFINITIONS _GNU_SOURCE)
 target_link_libraries(Mnemonics ${Boost_LIBRARIES})
