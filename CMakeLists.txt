@@ -243,8 +243,6 @@ set(WITH_TOOLS OFF CACHE BOOL "No tools")
 
 add_subdirectory(cryptonote/external/miniupnpc EXCLUDE_FROM_ALL)
 
-
-
 if (WIN32)
   if (NOT MSVC)
     message(FATAL_ERROR "Only MSVC is supported on this platform")

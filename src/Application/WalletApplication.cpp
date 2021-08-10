@@ -263,7 +263,7 @@ bool WalletApplication::initCryptoNoteAdapter() {
     }
 
     case INodeAdapter::INIT_DB_FAILED: {
-      if (askForRemoveDb()) {
+      /*if (askForRemoveDb()) {
         QString dbPath = Settings::instance().getDataDir().absoluteFilePath(
           Settings::instance().isTestnet() ? "testnet_DB" : "DB");
 
@@ -279,7 +279,7 @@ bool WalletApplication::initCryptoNoteAdapter() {
         }
 
         continue;
-      }
+      }*/
 
       return false;
     }
