@@ -1,4 +1,4 @@
-# Karbo-GUI
+# Karbo-GUI (Karbo Spring Wallet)
 
 Alt. GUI wallet for [Karbo](https://github.com/Karbovanets/karbo), working with database-driven backend (so-called [Karbo 2](https://github.com/Karbovanets/karbo)). For the version of this wallet based on memory/flat-file-based Karbo core go to https://github.com/seredat/karbo-gui/
 
