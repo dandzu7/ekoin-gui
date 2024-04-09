@@ -62,7 +62,7 @@ const char OPTION_PRIVACY_PARAMS[] = "privacyParams";
 const char OPTION_PRIVACY_NEWS_ENABLED[] = "newsEnabled";
 const char OPTION_BLOCK_EXPLORER_ENABLED[] = "blockExplorerEnabled";
 
-const char DEFAULT_WALLET_FILE_NAME[] = "karbo.wallet";
+const char DEFAULT_WALLET_FILE_NAME[] = "ekoin.wallet";
 const quint64 DEFAULT_OPTIMIZATION_PERIOD = 1000 * 60 * 30; // 30 minutes
 const quint64 DEFAULT_OPTIMIZATION_THRESHOLD = 10000000000000;
 const quint64 DEFAULT_OPTIMIZATION_MIXIN = 6;
@@ -76,7 +76,7 @@ Settings& Settings::instance() {
 
 
 Settings::Settings() : m_p2pBindPort(0), m_cmdLineParser(nullptr) {
-  m_defaultNodeList << "http://139.180.184.63:32348" << "http://66.42.60.46:32348";
+  m_defaultNodeList << "http://139.180.184.63:8197" << "http://66.42.60.46:8197";
 
   Style* lightStyle = new LightStyle();
   Style* darkStyle = new DarkStyle();
