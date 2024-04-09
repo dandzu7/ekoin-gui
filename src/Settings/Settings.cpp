@@ -76,7 +76,7 @@ Settings& Settings::instance() {
 
 
 Settings::Settings() : m_p2pBindPort(0), m_cmdLineParser(nullptr) {
-  m_defaultNodeList << "http://node.karbowanec.com:32348" << "http://node.karbovanets.org:32348" << "http://node.karbo.cloud:32348" << "http://node.karbo.io:32348";
+  m_defaultNodeList << "http://139.180.184.63:32348" << "http://66.42.60.46:32348";
 
   Style* lightStyle = new LightStyle();
   Style* darkStyle = new DarkStyle();
